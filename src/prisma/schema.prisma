@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Role id
+// 1 - Student (View own records)
+// 2 - Parent (View children records)
+// 3 - Teacher (Enter/modify own student(in same group) records)
+// 4 - Chair (View all department students records)
+// 5 - System Administrator (Create new course/groups, Create new user and grants/revokes perms)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique /// @encrypted
+  password String /// @encrypted
+  role     Int     @default(1)
+
+  parent  Parent?
+  student Student?
+  teacher Teacher?
+}
+
+model Student {
+  id       Int    @id @default(autoincrement())
+  fullName String
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
+
+  parent   Parent @relation(fields: [parentId], references: [id])
+  parentId Int
+
+  courses           CourseGroup[]
+  attendanceRecords AttendanceRecord[]
+}
+
+model Parent {
+  id       Int    @id @default(autoincrement())
+  fullName String
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
+
+  children Student[]
+}
+
+model Teacher {
+  id       Int    @id @default(autoincrement())
+  fullName String
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
+
+  courseGroups CourseGroup[]
+}
+
+model CourseGroup {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  teacher   Teacher @relation(fields: [teacherId], references: [id])
+  teacherId Int
+
+  students          Student[]
+  attendanceRecords AttendanceRecord[]
+}
+
+model AttendanceRecord {
+  id Int @id @default(autoincrement())
+
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId Int
+
+  courseGroup   CourseGroup @relation(fields: [courseGroupId], references: [id])
+  courseGroupId Int
+
+  dateTime DateTime
+
+  isPresent Boolean @default(false)
+}
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
+}

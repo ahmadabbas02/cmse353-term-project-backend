@@ -1,0 +1,28 @@
+# baseURL
+@baseURL = http://localhost:3000
+
+###
+# Teacher Signup
+POST {{ baseURL }}/teacherSignup
+Content-Type: application/json
+
+{
+  "email": "teacher@email.com",
+	"password": "password",
+  "fullName": "Teacher Name"
+}
+
+###
+# User Login
+POST {{ baseURL }}/login
+Content-Type: application/json
+
+{
+  "email": "example@email.com",
+	"password": "password"
+}
+
+###
+# User Logout
+POST {{ baseURL }}/logout
+Content-Type: application/json
