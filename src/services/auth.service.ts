@@ -1,5 +1,5 @@
-import { PrismaClient, Teacher, User } from "@prisma/client";
-import { CreateTeacherDto, LoginUserDto } from "@dtos/users.dto";
+import { Parent, PrismaClient, Student, Teacher, User } from "@prisma/client";
+import { CreateUserDto, LoginUserDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/HttpException";
 import { isEmpty, encrypt, decrypt } from "@utils/util";
 import { fieldEncryptionMiddleware } from "@mindgrep/prisma-deterministic-search-field-encryption";
@@ -17,10 +17,64 @@ class AuthService {
   }
 
   public users = this.prisma.user;
+  public students = this.prisma.student;
+  public parents = this.prisma.parent;
   public teachers = this.prisma.teacher;
 
-  public async signUpTeacher(teacherData: CreateTeacherDto): Promise<Teacher> {
-    if (isEmpty(teacherData)) throw new HttpException(400, "userData is empty");
+  public async registerStudent(studentData: CreateUserDto): Promise<Student> {
+    if (isEmpty(studentData)) throw new HttpException(400, "studentData is empty");
+
+    const findUser: User = await this.users.findUnique({ where: { email: studentData.email } });
+    if (findUser) throw new HttpException(409, `This email ${studentData.email} already exists`);
+
+    const { email, password, fullName } = studentData;
+
+    const createdUserData: Promise<User> = this.users.create({
+      data: {
+        email,
+        password,
+        role: 1,
+      },
+    });
+
+    const createdStudentData: Promise<Student> = this.students.create({
+      data: {
+        fullName: fullName,
+        userId: (await createdUserData).id,
+      },
+    });
+
+    return createdStudentData;
+  }
+
+  public async registerParent(parentData: CreateUserDto): Promise<Teacher> {
+    if (isEmpty(parentData)) throw new HttpException(400, "parentData is empty");
+
+    const findUser: User = await this.users.findUnique({ where: { email: parentData.email } });
+    if (findUser) throw new HttpException(409, `This email ${parentData.email} already exists`);
+
+    const { email, password, fullName } = parentData;
+
+    const createdUserData: Promise<User> = this.users.create({
+      data: {
+        email,
+        password,
+        role: 2,
+      },
+    });
+
+    const createdParentData: Promise<Parent> = this.parents.create({
+      data: {
+        fullName: fullName,
+        userId: (await createdUserData).id,
+      },
+    });
+
+    return createdParentData;
+  }
+
+  public async registerTeacher(teacherData: CreateUserDto): Promise<Teacher> {
+    if (isEmpty(teacherData)) throw new HttpException(400, "teacherData is empty");
 
     const findUser: User = await this.users.findUnique({ where: { email: teacherData.email } });
     if (findUser) throw new HttpException(409, `This email ${teacherData.email} already exists`);

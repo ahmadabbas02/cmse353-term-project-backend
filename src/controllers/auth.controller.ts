@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { Teacher } from "@prisma/client";
-import { CreateTeacherDto, LoginUserDto } from "@dtos/users.dto";
+import { Parent, Student, Teacher } from "@prisma/client";
+import { CreateUserDto, LoginUserDto } from "@dtos/users.dto";
 import AuthService from "@services/auth.service";
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
 import { excludeFromUser } from "@/utils/util";
@@ -8,10 +8,32 @@ import { excludeFromUser } from "@/utils/util";
 class AuthController {
   public authService = new AuthService();
 
+  public registerStudent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userData: CreateUserDto = req.body;
+      const signUpUserData: Student = await this.authService.registerStudent(userData);
+
+      res.status(201).json({ data: signUpUserData, message: "studentSignup" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public registerParent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userData: CreateUserDto = req.body;
+      const signUpUserData: Parent = await this.authService.registerParent(userData);
+
+      res.status(201).json({ data: signUpUserData, message: "parentSignup" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public registerTeacher = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userData: CreateTeacherDto = req.body;
-      const signUpUserData: Teacher = await this.authService.signUpTeacher(userData);
+      const userData: CreateUserDto = req.body;
+      const signUpUserData: Teacher = await this.authService.registerTeacher(userData);
 
       res.status(201).json({ data: signUpUserData, message: "teacherSignup" });
     } catch (error) {

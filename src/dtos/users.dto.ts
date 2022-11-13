@@ -7,17 +7,6 @@ export class CreateUserDto {
   @IsString()
   public password: string;
 
-  @IsNumber()
-  public role: number;
-}
-
-export class CreateTeacherDto {
-  @IsEmail()
-  public email: string;
-
-  @IsString()
-  public password: string;
-
   @IsString()
   public fullName: string;
 }
