@@ -7,9 +7,6 @@ export class CreateUserDto {
   @IsString()
   public password: string;
 
-  @IsString()
-  public fullName: string;
-
   @IsNumber()
   public role: number;
 }
@@ -23,4 +20,12 @@ export class CreateTeacherDto {
 
   @IsString()
   public fullName: string;
+}
+
+export class LoginUserDto {
+  @IsEmail()
+  public email: string;
+
+  @IsString()
+  public password: string;
 }

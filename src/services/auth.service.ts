@@ -1,5 +1,5 @@
 import { PrismaClient, Teacher, User } from "@prisma/client";
-import { CreateTeacherDto, CreateUserDto } from "@dtos/users.dto";
+import { CreateTeacherDto, LoginUserDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/HttpException";
 import { isEmpty, encrypt, decrypt } from "@utils/util";
 import { fieldEncryptionMiddleware } from "@mindgrep/prisma-deterministic-search-field-encryption";
@@ -18,21 +18,6 @@ class AuthService {
 
   public users = this.prisma.user;
   public teachers = this.prisma.teacher;
-
-  public async signup(userData: CreateUserDto): Promise<User> {
-    if (isEmpty(userData)) throw new HttpException(400, "userData is empty");
-
-    const findUser: User = await this.users.findUnique({ where: { email: userData.email } });
-    if (findUser) throw new HttpException(409, `This email ${userData.email} already exists`);
-
-    const createdUserData: Promise<User> = this.users.create({
-      data: {
-        ...userData,
-      },
-    });
-
-    return createdUserData;
-  }
 
   public async signUpTeacher(teacherData: CreateTeacherDto): Promise<Teacher> {
     if (isEmpty(teacherData)) throw new HttpException(400, "userData is empty");
@@ -60,13 +45,13 @@ class AuthService {
     return createdTeacherData;
   }
 
-  public async login(userData: CreateUserDto): Promise<{ findUser: User }> {
-    if (isEmpty(userData)) throw new HttpException(400, "userData is empty");
+  public async login(loginData: LoginUserDto): Promise<{ findUser: User }> {
+    if (isEmpty(loginData)) throw new HttpException(400, "loginData is empty");
 
-    const findUser: User = await this.users.findUnique({ where: { email: userData.email } });
-    if (!findUser) throw new HttpException(409, `This email ${userData.email} was not found`);
+    const findUser: User = await this.users.findUnique({ where: { email: loginData.email } });
+    if (!findUser) throw new HttpException(409, `This email ${loginData.email} was not found`);
 
-    const isPasswordMatching = userData.password === findUser.password;
+    const isPasswordMatching = loginData.password === findUser.password;
     if (!isPasswordMatching) throw new HttpException(409, "Password is not matching");
 
     return { findUser };

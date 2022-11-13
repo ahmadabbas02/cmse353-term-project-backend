@@ -1,5 +1,6 @@
 import { Request } from "express";
 import { User } from "@prisma/client";
+import { Session } from "express-session";
 
 export interface DataStoredInToken {
   id: number;
@@ -10,10 +11,10 @@ export interface TokenData {
   expiresIn: number;
 }
 
-export interface RequestWithSession extends Request {
-  session: SessionData;
+export interface RequestWithSessionData extends Request {
+  session: SessionInformation;
 }
 
-interface SessionData {
-  user: User;
+export interface SessionInformation extends Session {
+  userId?: number;
 }

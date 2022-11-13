@@ -1,3 +1,10 @@
+swagger: "2.0"
+info:
+  {
+    title: "Secure Attendance System API Docs",
+    version: "1.0",
+    description: "This was created as CMSE353 term project for EMU."
+  }
 tags:
 - name: users
   description: users API
@@ -26,7 +33,7 @@ paths:
         description: user Data
         required: true
         schema:
-          $ref: '#/definitions/users'
+          $ref: '#/definitions/User'
       responses:
         201:
           description: 'Created'
@@ -73,7 +80,7 @@ paths:
         description: user Data
         required: true
         schema:
-          $ref: '#/definitions/users'
+          $ref: '#/definitions/User'
       responses:
         200:
           description: 'OK'
@@ -105,11 +112,12 @@ paths:
 
 # definitions
 definitions:
-  users:
+  User:
     type: object
     required:
         - email
         - password
+        - role
     properties:
       email:
         type: string
@@ -117,6 +125,14 @@ definitions:
       password:
         type: string
         description: user Password
+      role:
+        type: number
+        description: |
+          1 - Student (View own records)
+          2 - Parent (View children records)
+          3 - Teacher (Enter/modify own student(in same group) records)
+          4 - Chair (View all department students records)
+          5 - System Administrator (Create new course/groups, Create new user and grants/revokes perms)
 
 schemes:
  - https

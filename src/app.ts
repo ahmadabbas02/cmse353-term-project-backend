@@ -55,12 +55,9 @@ class App {
     this.app.use(cookieParser());
     this.app.use(
       expressSession({
-        // cookie: {
-        //   maxAge: 24 * 60 * 60 * 1000, // 24 hours converted to ms
-        // },
         secret: process.env.SECRET_KEY,
         resave: false,
-        saveUninitialized: true,
+        saveUninitialized: false,
         store: new PrismaSessionStore(new PrismaClient(), {
           checkPeriod: 2 * 60 * 1000, // ms
           dbRecordIdIsSessionId: true,
@@ -80,14 +77,13 @@ class App {
     const options = {
       swaggerDefinition: {
         info: {
-          title: "REST API",
+          title: "Secure Attendance System API Docs",
           version: "1.0.0",
-          description: "Example docs",
+          description: "This was created as CMSE353 term project for EMU.",
         },
       },
       apis: ["swagger.yaml"],
     };
-
     const specs = swaggerJSDoc(options);
     this.app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
   }

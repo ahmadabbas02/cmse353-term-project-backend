@@ -51,7 +51,7 @@ class UserService {
       where: { id: userId },
       data: { ...userData },
     });
-    return updateUserData;
+    return excludeFromUser(updateUserData, "password");
   }
 
   public async deleteUser(userId: number): Promise<User> {
@@ -61,7 +61,7 @@ class UserService {
     if (!findUser) throw new HttpException(409, "User doesn't exist");
 
     const deleteUserData = await this.users.delete({ where: { id: userId } });
-    return deleteUserData;
+    return excludeFromUser(deleteUserData, "password");
   }
 }
 

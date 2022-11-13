@@ -1,21 +1,26 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { SECRET_KEY } from "@config";
 import { HttpException } from "@exceptions/HttpException";
-import { RequestWithSession } from "@interfaces/auth.interface";
+import { RequestWithSessionData } from "@/interfaces/auth.interface";
+// import { RequestWithSession } from "@interfaces/auth.interface";
 
-const authMiddleware = async (req: RequestWithSession, res: Response, next: NextFunction) => {
+const authMiddleware = async (req: RequestWithSessionData, res: Response, next: NextFunction) => {
   try {
-    if (req.session.user) {
-      const secretKey: string = SECRET_KEY;
-      const userId = req.session.user.id;
+    if (req.sessionID) {
+      const prisma = new PrismaClient();
+      const sessions = prisma.session;
 
-      const users = new PrismaClient().user;
-      const findUser = await users.findUnique({ where: { id: Number(userId) } });
+      const sessionId = req.sessionID;
+      const findSession = await sessions.findUnique({ where: { id: sessionId } });
 
-      if (findUser) {
-        req.session.user = findUser;
-        next();
+      if (findSession) {
+        const { userId } = JSON.parse(findSession.data);
+        if (req.session.userId === userId) {
+          next();
+        } else {
+          next(new HttpException(401, "Session has been tampered with!"));
+        }
       } else {
         next(new HttpException(401, "Wrong authentication token"));
       }
