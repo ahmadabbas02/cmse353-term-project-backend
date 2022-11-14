@@ -3,6 +3,7 @@ import { CreateUserDto, LoginUserDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/HttpException";
 import { isEmpty, encrypt, decrypt } from "@utils/util";
 import { fieldEncryptionMiddleware } from "@mindgrep/prisma-deterministic-search-field-encryption";
+import { UserRole } from "@/utils/consts";
 
 class AuthService {
   prisma = new PrismaClient();
@@ -33,7 +34,7 @@ class AuthService {
       data: {
         email,
         password,
-        role: 1,
+        role: UserRole.STUDENT,
       },
     });
 
@@ -59,7 +60,7 @@ class AuthService {
       data: {
         email,
         password,
-        role: 2,
+        role: UserRole.PARENT,
       },
     });
 
@@ -85,7 +86,7 @@ class AuthService {
       data: {
         email,
         password,
-        role: 3,
+        role: UserRole.TEACHER,
       },
     });
 
@@ -97,6 +98,44 @@ class AuthService {
     });
 
     return createdTeacherData;
+  }
+
+  public async registerChair(chairData: CreateUserDto): Promise<User> {
+    if (isEmpty(chairData)) throw new HttpException(400, "chairData is empty");
+
+    const findUser: User = await this.users.findUnique({ where: { email: chairData.email } });
+    if (findUser) throw new HttpException(409, `This email ${chairData.email} already exists`);
+
+    const { email, password } = chairData;
+
+    const createdUserData: Promise<User> = this.users.create({
+      data: {
+        email,
+        password,
+        role: UserRole.CHAIR,
+      },
+    });
+
+    return createdUserData;
+  }
+
+  public async registerAdministrator(administratorData: CreateUserDto): Promise<User> {
+    if (isEmpty(administratorData)) throw new HttpException(400, "administratorData is empty");
+
+    const findUser: User = await this.users.findUnique({ where: { email: administratorData.email } });
+    if (findUser) throw new HttpException(409, `This email ${administratorData.email} already exists`);
+
+    const { email, password } = administratorData;
+
+    const createdUserData: Promise<User> = this.users.create({
+      data: {
+        email,
+        password,
+        role: UserRole.SYSTEM_ADMINISTRATOR,
+      },
+    });
+
+    return createdUserData;
   }
 
   public async login(loginData: LoginUserDto): Promise<{ findUser: User }> {

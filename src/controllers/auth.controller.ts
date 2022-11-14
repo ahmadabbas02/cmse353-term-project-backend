@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { Parent, Student, Teacher } from "@prisma/client";
+import { Parent, Student, Teacher, User } from "@prisma/client";
 import { CreateUserDto, LoginUserDto } from "@dtos/users.dto";
 import AuthService from "@services/auth.service";
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
@@ -41,11 +41,34 @@ class AuthController {
     }
   };
 
+  public registerChair = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userData: CreateUserDto = req.body;
+      const signUpUserData: User = await this.authService.registerChair(userData);
+
+      res.status(201).json({ data: excludeFromUser(signUpUserData, "password"), message: "chairSignup" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public registerAdministrator = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userData: CreateUserDto = req.body;
+      const signUpUserData: User = await this.authService.registerAdministrator(userData);
+
+      res.status(201).json({ data: excludeFromUser(signUpUserData, "password"), message: "adminSignup" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public logIn = async (req: RequestWithSessionData, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userData: LoginUserDto = req.body;
       const { findUser } = await this.authService.login(userData);
       req.session.userId = findUser.id;
+      req.session.role = findUser.role;
       res.status(200).json({ data: excludeFromUser(findUser, "password"), message: "login" });
     } catch (error) {
       next(error);

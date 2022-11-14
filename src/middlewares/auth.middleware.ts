@@ -1,15 +1,14 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { SECRET_KEY } from "@config";
 import { HttpException } from "@exceptions/HttpException";
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
-// import { RequestWithSession } from "@interfaces/auth.interface";
 
-const authMiddleware = async (req: RequestWithSessionData, res: Response, next: NextFunction) => {
+export const isLoggedIn = async (req: RequestWithSessionData, res: Response, next: NextFunction) => {
   try {
-    if (req.sessionID) {
+    if (req.session.userId) {
       const prisma = new PrismaClient();
       const sessions = prisma.session;
+      const users = prisma.user;
 
       const sessionId = req.sessionID;
       const findSession = await sessions.findUnique({ where: { id: sessionId } });
@@ -17,7 +16,14 @@ const authMiddleware = async (req: RequestWithSessionData, res: Response, next: 
       if (findSession) {
         const { userId } = JSON.parse(findSession.data);
         if (req.session.userId === userId) {
-          next();
+          const findUser = await users.findUnique({ where: { id: req.session.userId } });
+
+          if (findUser) {
+            req.session.role = findUser.role;
+            next();
+          } else {
+            next(new HttpException(401, "Session has been tampered!"));
+          }
         } else {
           next(new HttpException(401, "Session has been tampered with!"));
         }
@@ -32,4 +38,21 @@ const authMiddleware = async (req: RequestWithSessionData, res: Response, next: 
   }
 };
 
-export default authMiddleware;
+export const isSpecificRole = (role: String) => {
+  return async (req: RequestWithSessionData, res: Response, next: NextFunction) => {
+    try {
+      const sessionRole = req.session.role;
+      if (sessionRole) {
+        if (sessionRole === role) {
+          next();
+        } else {
+          next(new HttpException(401, `Only ${role} can access this!`));
+        }
+      } else {
+        next(new HttpException(404, "Failed to load role!"));
+      }
+    } catch (error) {
+      next(new HttpException(401, "Wrong authentication token"));
+    }
+  };
+};

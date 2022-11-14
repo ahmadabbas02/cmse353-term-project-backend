@@ -21,7 +21,7 @@ model User {
   id       Int     @unique @id @default(autoincrement())
   email    String  @unique /// @encrypted
   password String /// @encrypted
-  role     Int     @default(1)
+  role     String     @default("Student")
 
   parent  Parent?
   student Student?
