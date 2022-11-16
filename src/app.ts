@@ -86,6 +86,7 @@ class App {
     };
     const specs = swaggerJSDoc(options);
     this.app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+    logger.info(`Docs available at http://localhost:${this.port}/api-docs`);
   }
 
   private initializeErrorHandling() {

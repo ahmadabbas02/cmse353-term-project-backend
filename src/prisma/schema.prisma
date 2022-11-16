@@ -1,13 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Role id
-// 1 - Student (View own records)
-// 2 - Parent (View children records)
-// 3 - Teacher (Enter/modify own student(in same group) records)
-// 4 - Chair (View all department students records)
-// 5 - System Administrator (Create new course/groups, Create new user and grants/revokes perms)
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,13 +11,13 @@ datasource db {
 }
 
 model User {
-  id       Int     @unique @id @default(autoincrement())
-  email    String  @unique /// @encrypted
+  id       Int    @id @unique @default(autoincrement())
+  email    String @unique /// @encrypted
   password String /// @encrypted
-  role     String     @default("Student")
-
-  parent  Parent?
+  role     String @default("Student")
+  
   student Student?
+  parent  Parent?
   teacher Teacher?
 }
 
@@ -43,7 +36,7 @@ model Student {
 }
 
 model Parent {
-  id       Int    @unique @id @default(autoincrement())
+  id       Int    @id @unique @default(autoincrement())
   fullName String
 
   user   User @relation(fields: [userId], references: [id])
@@ -53,7 +46,7 @@ model Parent {
 }
 
 model Teacher {
-  id       Int    @unique @id @default(autoincrement())
+  id       Int    @id @unique @default(autoincrement())
   fullName String
 
   user   User @relation(fields: [userId], references: [id])
@@ -64,7 +57,7 @@ model Teacher {
 
 model CourseGroup {
   id   Int    @id @default(autoincrement())
-  name String
+  name String @unique
 
   teacher   Teacher @relation(fields: [teacherId], references: [id])
   teacherId Int
