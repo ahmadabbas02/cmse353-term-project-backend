@@ -130,3 +130,8 @@ dist
 .pnp.*
 
 tests/
+.idea/.gitignore
+.idea/cmse353-term-project.iml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/inspectionProfiles/Project_Default.xml

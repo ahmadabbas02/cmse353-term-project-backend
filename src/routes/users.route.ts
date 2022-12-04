@@ -14,24 +14,11 @@ class UsersRoute implements Routes {
   }
 
   private initializeRoutes() {
-    /**
-     * @openapi
-     * /users:
-     *  get:
-     *    tags:
-     *      - users
-     *    summary: Find All Users
-     *    responses:
-     *      200:
-     *        description: OK
-     *      500:
-     *        description: Server Error
-     */
     this.router.get(`${this.path}`, this.usersController.getUsers);
 
-    this.router.get(`${this.path}/:id(\\d+)`, this.usersController.getUserById);
-    this.router.put(`${this.path}/:id(\\d+)`, validationMiddleware(CreateUserDto, "body", true), this.usersController.updateUser);
-    this.router.delete(`${this.path}/:id(\\d+)`, this.usersController.deleteUser);
+    this.router.get(`${this.path}/:id`, this.usersController.getUserById);
+    this.router.put(`${this.path}/:id`, validationMiddleware(CreateUserDto, "body", true), this.usersController.updateUser);
+    this.router.delete(`${this.path}/:id`, this.usersController.deleteUser);
   }
 }
 

@@ -5,7 +5,7 @@ import validationMiddleware from "@middlewares/validation.middleware";
 import CoursesController from "@/controllers/courses.controller";
 import { isLoggedIn, isSpecificRole } from "@/middlewares/auth.middleware";
 import { UserRole } from "@/utils/consts";
-import { CreateCourseDto } from "@/dtos/courses.dto";
+import { AddAttendanceRecordDto, AddStudentToCourseDto, CreateCourseDto, UpdateAttendanceRecordDto } from "@/dtos/courses.dto";
 
 class CoursesRoutes implements Routes {
   public path = "/courses";
@@ -18,6 +18,7 @@ class CoursesRoutes implements Routes {
 
   private initializeRoutes() {
     this.router.get(`${this.path}`, isLoggedIn, isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR), this.coursesController.getAllCourses);
+
     this.router.post(
       `${this.path}/create`,
       isLoggedIn,
@@ -26,9 +27,38 @@ class CoursesRoutes implements Routes {
       this.coursesController.createCourse,
     );
 
-    // this.router.get(`${this.path}/:id(\\d+)`, this.usersController.getUserById);
-    // this.router.put(`${this.path}/:id(\\d+)`, validationMiddleware(CreateUserDto, "body", true), this.usersController.updateUser);
-    // this.router.delete(`${this.path}/:id(\\d+)`, this.usersController.deleteUser);
+    this.router.post(
+      `${this.path}/addStudentToCourse`,
+      isLoggedIn,
+      isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR),
+      validationMiddleware(AddStudentToCourseDto, "body"),
+      this.coursesController.addStudentToCourse,
+    );
+
+    this.router.post(
+      `${this.path}/removeStudentFromCourse`,
+      isLoggedIn,
+      isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR),
+      validationMiddleware(AddStudentToCourseDto, "body"),
+      this.coursesController.removeStudentFromCourse,
+    );
+
+    // Teacher only
+    this.router.post(
+      `${this.path}/createAttendanceRecords`,
+      isLoggedIn,
+      isSpecificRole(UserRole.TEACHER),
+      validationMiddleware(AddAttendanceRecordDto, "body"),
+      this.coursesController.addAttendanceRecord,
+    );
+
+    this.router.post(
+      `${this.path}/markAttendanceRecordPresent`,
+      isLoggedIn,
+      isSpecificRole(UserRole.TEACHER),
+      validationMiddleware(UpdateAttendanceRecordDto, "body"),
+      this.coursesController.markAttendanceRecordPresent,
+    );
   }
 }
 

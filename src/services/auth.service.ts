@@ -30,18 +30,12 @@ class AuthService {
 
     const { email, password, fullName } = studentData;
 
-    const createdUserData: Promise<User> = this.users.create({
-      data: {
-        email,
-        password,
-        role: UserRole.STUDENT,
-      },
-    });
-
     const createdStudentData: Promise<Student> = this.students.create({
       data: {
         fullName: fullName,
-        userId: (await createdUserData).id,
+        user: {
+          create: { email, password, role: UserRole.STUDENT },
+        },
       },
     });
 
@@ -56,18 +50,12 @@ class AuthService {
 
     const { email, password, fullName } = parentData;
 
-    const createdUserData: Promise<User> = this.users.create({
-      data: {
-        email,
-        password,
-        role: UserRole.PARENT,
-      },
-    });
-
     const createdParentData: Promise<Parent> = this.parents.create({
       data: {
         fullName: fullName,
-        userId: (await createdUserData).id,
+        user: {
+          create: { email, password, role: UserRole.PARENT },
+        },
       },
     });
 
@@ -82,18 +70,12 @@ class AuthService {
 
     const { email, password, fullName } = teacherData;
 
-    const createdUserData: Promise<User> = this.users.create({
-      data: {
-        email,
-        password,
-        role: UserRole.TEACHER,
-      },
-    });
-
     const createdTeacherData: Promise<Teacher> = this.teachers.create({
       data: {
         fullName: fullName,
-        userId: (await createdUserData).id,
+        user: {
+          create: { email, password, role: UserRole.TEACHER },
+        },
       },
     });
 

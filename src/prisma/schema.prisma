@@ -6,74 +6,78 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id       Int    @id @unique @default(autoincrement())
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
   email    String @unique /// @encrypted
   password String /// @encrypted
   role     String @default("Student")
-  
+
   student Student?
   parent  Parent?
   teacher Teacher?
 }
 
 model Student {
-  id       Int    @id @default(autoincrement())
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
   fullName String
 
-  user   User @relation(fields: [userId], references: [id])
-  userId Int  @unique
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
 
   parent   Parent? @relation(fields: [parentId], references: [id])
-  parentId Int?
+  parentId String?
 
-  courses           CourseGroup[]
+  courseIds String[]      @db.ObjectId
+  courses   CourseGroup[] @relation(fields: [courseIds], references: [id])
+
   attendanceRecords AttendanceRecord[]
 }
 
 model Parent {
-  id       Int    @id @unique @default(autoincrement())
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
   fullName String
 
-  user   User @relation(fields: [userId], references: [id])
-  userId Int  @unique
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
 
   children Student[]
 }
 
 model Teacher {
-  id       Int    @id @unique @default(autoincrement())
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
   fullName String
 
-  user   User @relation(fields: [userId], references: [id])
-  userId Int  @unique
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
 
   courseGroups CourseGroup[]
 }
 
 model CourseGroup {
-  id   Int    @id @default(autoincrement())
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
   name String @unique
 
   teacher   Teacher @relation(fields: [teacherId], references: [id])
-  teacherId Int
+  teacherId String
 
-  students          Student[]
+  studentIds String[]  @db.ObjectId
+  students   Student[] @relation(fields: [studentIds], references: [id])
+
   attendanceRecords AttendanceRecord[]
 }
 
 model AttendanceRecord {
-  id Int @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
   student   Student @relation(fields: [studentId], references: [id])
-  studentId Int
+  studentId String
 
   courseGroup   CourseGroup @relation(fields: [courseGroupId], references: [id])
-  courseGroupId Int
+  courseGroupId String
 
   dateTime DateTime
 
@@ -81,7 +85,7 @@ model AttendanceRecord {
 }
 
 model Session {
-  id        String   @id
+  id        String   @id @map("_id")
   sid       String   @unique
   data      String
   expiresAt DateTime
