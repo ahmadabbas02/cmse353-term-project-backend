@@ -1,12 +1,12 @@
 import { NextFunction, Response } from "express";
-import { PrismaClient } from "@prisma/client";
 import { HttpException } from "@exceptions/HttpException";
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
+import { excludeFromUser } from "@/utils/util";
+import { prisma } from "@/utils/db";
 
 export const isLoggedIn = async (req: RequestWithSessionData, res: Response, next: NextFunction) => {
   try {
-    if (req.session.userId) {
-      const prisma = new PrismaClient();
+    if (req.session) {
       const sessions = prisma.session;
       const users = prisma.user;
 
@@ -14,12 +14,12 @@ export const isLoggedIn = async (req: RequestWithSessionData, res: Response, nex
       const findSession = await sessions.findUnique({ where: { id: sessionId } });
 
       if (findSession) {
-        const { userId } = JSON.parse(findSession.data);
-        if (req.session.userId === userId) {
-          const findUser = await users.findUnique({ where: { id: req.session.userId } });
+        const { user } = JSON.parse(findSession.data);
+        if (req.session.user.id === user.id) {
+          const findUser = await users.findUnique({ where: { id: req.session.user.id } });
 
           if (findUser) {
-            req.session.role = findUser.role;
+            req.session.user = excludeFromUser(findUser, "password");
             next();
           } else {
             next(new HttpException(401, "Session has been tampered!"));
@@ -41,7 +41,7 @@ export const isLoggedIn = async (req: RequestWithSessionData, res: Response, nex
 export const isSpecificRole = (role: String) => {
   return async (req: RequestWithSessionData, res: Response, next: NextFunction) => {
     try {
-      const sessionRole = req.session.role;
+      const sessionRole = req.session.user.role;
       if (sessionRole) {
         if (sessionRole === role) {
           next();

@@ -67,8 +67,7 @@ class AuthController {
     try {
       const userData: LoginUserDto = req.body;
       const { findUser } = await this.authService.login(userData);
-      req.session.userId = findUser.id;
-      req.session.role = findUser.role;
+      req.session.user = findUser;
       res.status(200).json({ data: excludeFromUser(findUser, "password"), message: "login" });
     } catch (error) {
       next(error);

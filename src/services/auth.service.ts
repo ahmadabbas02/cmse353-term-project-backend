@@ -1,26 +1,15 @@
-import { Parent, PrismaClient, Student, Teacher, User } from "@prisma/client";
+import { Parent, Student, Teacher, User } from "@prisma/client";
 import { CreateUserDto, LoginUserDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/HttpException";
-import { isEmpty, encrypt, decrypt } from "@utils/util";
-import { fieldEncryptionMiddleware } from "@mindgrep/prisma-deterministic-search-field-encryption";
+import { isEmpty } from "@utils/util";
 import { UserRole } from "@/utils/consts";
+import { prisma } from "@/utils/db";
 
 class AuthService {
-  prisma = new PrismaClient();
-
-  constructor() {
-    this.prisma.$use(
-      fieldEncryptionMiddleware({
-        encryptFn: (decrypted: string) => encrypt(decrypted),
-        decryptFn: (encrypted: string) => decrypt(encrypted),
-      }),
-    );
-  }
-
-  public users = this.prisma.user;
-  public students = this.prisma.student;
-  public parents = this.prisma.parent;
-  public teachers = this.prisma.teacher;
+  public users = prisma.user;
+  public students = prisma.student;
+  public parents = prisma.parent;
+  public teachers = prisma.teacher;
 
   public async registerStudent(studentData: CreateUserDto): Promise<Student> {
     if (isEmpty(studentData)) throw new HttpException(400, "studentData is empty");
@@ -30,18 +19,12 @@ class AuthService {
 
     const { email, password, fullName } = studentData;
 
-    const createdUserData: Promise<User> = this.users.create({
-      data: {
-        email,
-        password,
-        role: UserRole.STUDENT,
-      },
-    });
-
     const createdStudentData: Promise<Student> = this.students.create({
       data: {
         fullName: fullName,
-        userId: (await createdUserData).id,
+        user: {
+          create: { email, password, role: UserRole.STUDENT },
+        },
       },
     });
 
@@ -56,18 +39,12 @@ class AuthService {
 
     const { email, password, fullName } = parentData;
 
-    const createdUserData: Promise<User> = this.users.create({
-      data: {
-        email,
-        password,
-        role: UserRole.PARENT,
-      },
-    });
-
     const createdParentData: Promise<Parent> = this.parents.create({
       data: {
         fullName: fullName,
-        userId: (await createdUserData).id,
+        user: {
+          create: { email, password, role: UserRole.PARENT },
+        },
       },
     });
 
@@ -82,18 +59,12 @@ class AuthService {
 
     const { email, password, fullName } = teacherData;
 
-    const createdUserData: Promise<User> = this.users.create({
-      data: {
-        email,
-        password,
-        role: UserRole.TEACHER,
-      },
-    });
-
     const createdTeacherData: Promise<Teacher> = this.teachers.create({
       data: {
         fullName: fullName,
-        userId: (await createdUserData).id,
+        user: {
+          create: { email, password, role: UserRole.TEACHER },
+        },
       },
     });
 

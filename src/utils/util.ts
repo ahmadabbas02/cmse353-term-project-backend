@@ -1,5 +1,3 @@
-import CryptoJS from "crypto-js";
-
 /**
  * @method isEmpty
  * @param {String | Number | Object} value
@@ -18,34 +16,6 @@ export const isEmpty = (value: string | number | object): boolean => {
   } else {
     return false;
   }
-};
-
-/**
- * @method encrypt
- * @param {String} plainText
- * @returns {String} encrypted string
- * @description this will encrypt the string by using DES
- */
-export const encrypt = (plainText: string): string => {
-  const key = CryptoJS.enc.Utf8.parse(process.env.ENCRYPTION_KEY);
-  return CryptoJS.DES.encrypt(plainText, key, {
-    mode: CryptoJS.mode.ECB,
-    padding: CryptoJS.pad.Pkcs7,
-  }).toString();
-};
-
-/**
- * @method decrypt
- * @param {String} cipherText
- * @returns {String} decrypted string
- * @description this will decrypt the string which was encrypted by DES
- */
-export const decrypt = (cipherText: string): unknown => {
-  const key = CryptoJS.enc.Utf8.parse(process.env.ENCRYPTION_KEY);
-  return CryptoJS.DES.decrypt(cipherText, key, {
-    mode: CryptoJS.mode.ECB,
-    padding: CryptoJS.pad.Pkcs7,
-  }).toString(CryptoJS.enc.Utf8);
 };
 
 // Exclude keys from user

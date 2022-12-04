@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "User" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "role" TEXT NOT NULL DEFAULT 'Student'
@@ -8,43 +8,43 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "Student" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "fullName" TEXT NOT NULL,
-    "userId" INTEGER NOT NULL,
-    "parentId" INTEGER,
+    "userId" TEXT NOT NULL,
+    "parentId" TEXT,
     CONSTRAINT "Student_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "Student_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Parent" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "Parent" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "fullName" TEXT NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "userId" TEXT NOT NULL,
     CONSTRAINT "Parent_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "Teacher" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "fullName" TEXT NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "userId" TEXT NOT NULL,
     CONSTRAINT "Teacher_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "CourseGroup" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
-    "teacherId" INTEGER NOT NULL,
+    "teacherId" TEXT NOT NULL,
     CONSTRAINT "CourseGroup_teacherId_fkey" FOREIGN KEY ("teacherId") REFERENCES "Teacher" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "AttendanceRecord" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "studentId" INTEGER NOT NULL,
-    "courseGroupId" INTEGER NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "studentId" TEXT NOT NULL,
+    "courseGroupId" TEXT NOT NULL,
     "dateTime" DATETIME NOT NULL,
     "isPresent" BOOLEAN NOT NULL DEFAULT false,
     CONSTRAINT "AttendanceRecord_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -61,14 +61,11 @@ CREATE TABLE "Session" (
 
 -- CreateTable
 CREATE TABLE "_CourseGroupToStudent" (
-    "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL,
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
     CONSTRAINT "_CourseGroupToStudent_A_fkey" FOREIGN KEY ("A") REFERENCES "CourseGroup" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "_CourseGroupToStudent_B_fkey" FOREIGN KEY ("B") REFERENCES "Student" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_id_key" ON "User"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
@@ -77,16 +74,13 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE UNIQUE INDEX "Student_userId_key" ON "Student"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Parent_id_key" ON "Parent"("id");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Parent_userId_key" ON "Parent"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Teacher_id_key" ON "Teacher"("id");
+CREATE UNIQUE INDEX "Teacher_userId_key" ON "Teacher"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Teacher_userId_key" ON "Teacher"("userId");
+CREATE UNIQUE INDEX "CourseGroup_name_key" ON "CourseGroup"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Session_sid_key" ON "Session"("sid");

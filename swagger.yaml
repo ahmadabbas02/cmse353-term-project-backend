@@ -8,6 +8,8 @@ info:
 tags:
 - name: users
   description: users API
+- name: auth
+  description: Routes related to authentication
 
 paths:
 # [GET] users
@@ -109,6 +111,41 @@ paths:
           description: 'Conflict'
         500:
           description: 'Server Error'
+  
+  
+  /auth/studentSignup:
+    post:
+      tags:
+      - auth
+      summary: Add student to database
+      parameters:
+      - name: body
+        in: body
+        description: Student data
+        required: true
+        schema:
+          type: object
+          description: CreateUserDto
+          required:
+            - email
+            - password
+            - fullName
+          properties: 
+            email:
+              type: string
+            password:
+              type: string
+            fullName:
+              type: string
+      responses:
+        201:
+          description: 'Created'
+        400:
+          description: 'Bad Request'
+        409:
+          description: 'Conflict'
+        500:
+          description: 'Server Error'
 
 # definitions
 definitions:
@@ -148,7 +185,7 @@ definitions:
         $ref: '#/definitions/Student'
       parent:
         type: object
-        $ref: ''
+        $ref: '#/definitions/Parent'
 
   Student:
     type: object
@@ -175,7 +212,7 @@ definitions:
       courses:
         type: array
         items: 
-          $ref: ''
+          $ref: '#/definitions/CourseGroup'
 
   Parent:
     type: object

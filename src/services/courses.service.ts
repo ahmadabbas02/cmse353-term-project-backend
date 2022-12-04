@@ -1,19 +1,24 @@
-import { CreateCourseDto } from "@/dtos/courses.dto";
+import { AddAttendanceRecordDto, AddStudentToCourseDto, CreateCourseDto, UpdateAttendanceRecordDto } from "@/dtos/courses.dto";
 import { HttpException } from "@/exceptions/HttpException";
-import { CourseGroup, PrismaClient } from "@prisma/client";
+import { RequestWithSessionData } from "@/interfaces/auth.interface";
+import { CourseGroup } from "@prisma/client";
+import { prisma } from "@/utils/db";
+
 import { isEmpty } from "class-validator";
 
 class CoursesService {
-  prisma = new PrismaClient();
-  courses = this.prisma.courseGroup;
+  courses = prisma.courseGroup;
+  students = prisma.student;
+  teachers = prisma.teacher;
+  attendanceRecords = prisma.attendanceRecord;
 
-  public async findAllCourses(): Promise<CourseGroup[]> {
+  public async findAllCourses() {
     const courses = this.courses.findMany();
 
     return courses;
   }
 
-  public async createCourse(courseData: CreateCourseDto): Promise<CourseGroup> {
+  public async createCourse(courseData: CreateCourseDto) {
     if (isEmpty(courseData)) throw new HttpException(400, "courseData is empty");
 
     const { name, teacherId } = courseData;
@@ -29,6 +34,146 @@ class CoursesService {
     });
 
     return createdCourse;
+  }
+
+  public async addStudent(studentData: AddStudentToCourseDto) {
+    const studentsInCourse = await this.students.findMany({
+      where: {
+        courses: {
+          some: {
+            id: studentData.courseId,
+          },
+        },
+      },
+    });
+    studentsInCourse.forEach(student => {
+      delete student.fullName;
+      delete student.userId;
+      delete student.parentId;
+    });
+    console.log("🚀 ~ file: courses.service.ts ~ line 48 ~ CoursesService ~ addStudent ~ studentsInCourse", studentsInCourse);
+    const isStudentInCourse = studentsInCourse.find(student => student.id == studentData.studentId);
+    console.log("🚀 ~ file: courses.service.ts ~ line 50 ~ CoursesService ~ addStudent ~ isStudentInCourse", isStudentInCourse);
+
+    // Check if student is already added to course
+    if (isStudentInCourse) {
+      throw new HttpException(409, `The course ${studentData.courseId} already contains student ${studentData.studentId}`);
+    }
+
+    const student = await this.students.findFirst({ where: { id: studentData.studentId } });
+    delete student.userId;
+    delete student.fullName;
+    delete student.parentId;
+
+    studentsInCourse.push(student);
+
+    console.log("🚀 ~ file: courses.service.ts ~ line 60 ~ CoursesService ~ addStudent ~ studentsInCourse", studentsInCourse);
+
+    const updatedCourse = await this.courses.update({
+      where: { id: studentData.courseId },
+      data: {
+        students: {
+          set: studentsInCourse,
+        },
+      },
+    });
+
+    return updatedCourse;
+  }
+
+  public async removeStudent(studentData: AddStudentToCourseDto) {
+    const studentsInCourse = await this.students.findMany({
+      where: {
+        courses: {
+          some: {
+            id: studentData.courseId,
+          },
+        },
+      },
+    });
+    studentsInCourse.forEach(student => {
+      delete student.fullName;
+      delete student.userId;
+      delete student.parentId;
+    });
+    console.log("🚀 ~ file: courses.service.ts:99 ~ CoursesService ~ removeStudent ~ studentsInCourse", studentsInCourse);
+    const isStudentInCourse = studentsInCourse.find(student => student.id == studentData.studentId);
+    console.log("🚀 ~ file: courses.service.ts:101 ~ CoursesService ~ removeStudent ~ isStudentInCourse", isStudentInCourse);
+
+    // Check if student is not in course
+    if (!isStudentInCourse) {
+      throw new HttpException(409, `The course does not contain the student`);
+    }
+
+    // Delete attendance records related to the course
+    const deletedRecords = await this.attendanceRecords.deleteMany({
+      where: {
+        studentId: studentData.studentId,
+        courseGroupId: studentData.courseId,
+      },
+    });
+    console.log("🚀 ~ file: courses.service.ts:115 ~ CoursesService ~ removeStudent ~ deletedRecords", deletedRecords);
+
+    const filteredStudents = studentsInCourse.filter(student => student.id !== studentData.studentId);
+    console.log("🚀 ~ file: courses.service.ts ~ line 103 ~ CoursesService ~ removeStudent ~ filteredStudents", filteredStudents);
+
+    const updatedCourse = await this.courses.update({
+      where: { id: studentData.courseId },
+      data: { students: { set: filteredStudents } },
+    });
+
+    return updatedCourse;
+  }
+
+  public async addAttendanceRecords(attendanceData: AddAttendanceRecordDto) {
+    const studentIds = (
+      await this.students.findMany({
+        where: {
+          courses: {
+            every: {
+              id: attendanceData.courseId,
+            },
+          },
+        },
+      })
+    ).map(student => student.id);
+
+    // Create attendance record for each student taking that course and mark as not present
+    const createdAttendanceRecords = studentIds.map(async studentId => {
+      const createdRecord = await this.attendanceRecords.create({
+        data: {
+          courseGroupId: attendanceData.courseId,
+          dateTime: new Date(attendanceData.dateTime),
+          studentId,
+          isPresent: false,
+        },
+      });
+      return createdRecord;
+    });
+    return createdAttendanceRecords;
+  }
+
+  public async markAttendanceRecordPresent(attendanceData: UpdateAttendanceRecordDto, req: RequestWithSessionData) {
+    const attendanceRecord = await this.attendanceRecords.findUnique({
+      where: { id: attendanceData.attendanceRecordId },
+    });
+
+    const course = await this.courses.findUnique({
+      where: { id: attendanceRecord.courseGroupId },
+    });
+
+    const teacherId = (await this.teachers.findFirst({ where: { userId: req.session.user.id } })).id;
+
+    if (course.teacherId !== teacherId) {
+      throw new HttpException(401, `You should be the course teacher to access!`);
+    }
+
+    const updatedAttendanceRecord = await this.attendanceRecords.update({
+      where: { id: attendanceData.attendanceRecordId },
+      data: { isPresent: true },
+    });
+
+    return updatedAttendanceRecord;
   }
 }
 

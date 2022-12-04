@@ -1,22 +1,11 @@
-import { PrismaClient, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { CreateUserDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/HttpException";
-import { decrypt, encrypt, excludeFromUser, excludeFromUsers, isEmpty } from "@utils/util";
-import { fieldEncryptionMiddleware } from "@mindgrep/prisma-deterministic-search-field-encryption";
+import { excludeFromUser, excludeFromUsers, isEmpty } from "@utils/util";
+import { prisma } from "@/utils/db";
 
 class UserService {
-  private prisma = new PrismaClient();
-
-  public users = this.prisma.user;
-
-  constructor() {
-    this.prisma.$use(
-      fieldEncryptionMiddleware({
-        encryptFn: (decrypted: string) => encrypt(decrypted),
-        decryptFn: (encrypted: string) => decrypt(encrypted),
-      }),
-    );
-  }
+  public users = prisma.user;
 
   public async findAllUser(): Promise<User[]> {
     const allUser: User[] = await this.users.findMany({
@@ -30,7 +19,7 @@ class UserService {
     return excludeFromUsers(allUser, "password");
   }
 
-  public async findUserById(userId: number): Promise<User> {
+  public async findUserById(userId: string): Promise<User> {
     if (isEmpty(userId)) throw new HttpException(400, "UserId is empty");
 
     const findUser: User = await this.users.findUnique({
@@ -41,7 +30,7 @@ class UserService {
     return excludeFromUser(findUser, "password");
   }
 
-  public async updateUser(userId: number, userData: CreateUserDto): Promise<User> {
+  public async updateUser(userId: string, userData: CreateUserDto): Promise<User> {
     if (isEmpty(userData)) throw new HttpException(400, "userData is empty");
 
     const findUser: User = await this.users.findUnique({ where: { id: userId } });
@@ -54,7 +43,7 @@ class UserService {
     return excludeFromUser(updateUserData, "password");
   }
 
-  public async deleteUser(userId: number): Promise<User> {
+  public async deleteUser(userId: string): Promise<User> {
     if (isEmpty(userId)) throw new HttpException(400, "User doesn't existId");
 
     const findUser: User = await this.users.findUnique({ where: { id: userId } });
