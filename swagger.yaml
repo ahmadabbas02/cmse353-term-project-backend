@@ -1,151 +1,248 @@
 swagger: "2.0"
-info:
-  {
-    title: "Secure Attendance System API Docs",
-    version: "1.0",
-    description: "This was created as CMSE353 term project for EMU."
-  }
+info: { title: "Secure Attendance System API Docs", version: "1.0", description: "This was created as CMSE353 term project for EMU." }
 tags:
-- name: users
-  description: users API
-- name: auth
-  description: Routes related to authentication
+  - name: users
+    description: users API
+  - name: auth
+    description: Routes related to authentication
 
 paths:
-# [GET] users
   /users:
     get:
       tags:
-      - users
+        - users
       summary: Find All Users
       responses:
         200:
-          description: 'OK'
+          description: "OK"
         500:
-          description: 'Server Error'
+          description: "Server Error"
 
-# [POST] users
+    # [POST] users
     post:
       tags:
-      - users
+        - users
       summary: Add User
       parameters:
-      - name: body
-        in: body
-        description: user Data
-        required: true
-        schema:
-          $ref: '#/definitions/User'
+        - name: body
+          in: body
+          description: user Data
+          required: true
+          schema:
+            $ref: "#/definitions/User"
       responses:
         201:
-          description: 'Created'
+          description: "Created"
         400:
-          description: 'Bad Request'
+          description: "Bad Request"
         409:
-          description: 'Conflict'
+          description: "Conflict"
         500:
-          description: 'Server Error'
+          description: "Server Error"
 
-# [GET] users/id
   /users/{id}:
     get:
       tags:
-      - users
+        - users
       summary: Find User By Id
       parameters:
-      - name: id
-        in: path
-        description: User Id
-        required: true
-        type: integer
+        - name: id
+          in: path
+          description: User Id
+          required: true
+          type: integer
       responses:
         200:
-          description: 'OK'
+          description: "OK"
         409:
-          description: 'Conflict'
+          description: "Conflict"
         500:
-          description: 'Server Error'
+          description: "Server Error"
 
-# [PUT] users/id
+    # [PUT] users/id
     put:
       tags:
-      - users
+        - users
       summary: Update User By Id
       parameters:
-      - name: id
-        in: path
-        description: user Id
-        required: true
-        type: integer
-      - name: body
-        in: body
-        description: user Data
-        required: true
-        schema:
-          $ref: '#/definitions/User'
+        - name: id
+          in: path
+          description: user Id
+          required: true
+          type: integer
+        - name: body
+          in: body
+          description: user Data
+          required: true
+          schema:
+            $ref: "#/definitions/User"
       responses:
         200:
-          description: 'OK'
+          description: "OK"
         400:
-          description: 'Bad Request'
+          description: "Bad Request"
         409:
-          description: 'Conflict'
+          description: "Conflict"
         500:
-          description: 'Server Error'
+          description: "Server Error"
 
-# [DELETE] users/id
+    # [DELETE] users/id
     delete:
       tags:
-      - users
+        - users
       summary: Delete User By Id
       parameters:
-      - name: id
-        in: path
-        description: user Id
-        required: true
-        type: integer
+        - name: id
+          in: path
+          description: user Id
+          required: true
+          type: integer
       responses:
         200:
-          description: 'OK'
+          description: "OK"
         409:
-          description: 'Conflict'
+          description: "Conflict"
         500:
-          description: 'Server Error'
-  
-  
+          description: "Server Error"
+
   /auth/studentSignup:
     post:
       tags:
-      - auth
+        - auth
       summary: Add student to database
       parameters:
-      - name: body
-        in: body
-        description: Student data
-        required: true
-        schema:
-          type: object
-          description: CreateUserDto
-          required:
-            - email
-            - password
-            - fullName
-          properties: 
-            email:
-              type: string
-            password:
-              type: string
-            fullName:
-              type: string
+        - name: body
+          in: body
+          description: Student data
+          required: true
+          schema:
+            type: object
+            description: CreateUserDto
+            required:
+              - email
+              - password
+              - fullName
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+              fullName:
+                type: string
       responses:
         201:
-          description: 'Created'
+          description: "Created"
         400:
-          description: 'Bad Request'
+          description: "Bad Request"
         409:
-          description: 'Conflict'
+          description: "Conflict"
         500:
-          description: 'Server Error'
+          description: "Server Error"
+
+  /auth/parentSignup:
+    post:
+      tags:
+        - auth
+      summary: "Add parent to database"
+      parameters:
+        - name: body
+          in: body
+          description: parent data
+          required: true
+          schema:
+            type: object
+            description: CreateUserDto
+            required:
+              - email
+              - password
+              - fullName
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+              fullName:
+                type: string
+      responses:
+        201:
+          description: "Created"
+        400:
+          description: "Bad Request"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+  /auth/teacherSignup:
+    post:
+      tags:
+        - auth
+      summary: "Add teacher to database"
+      parameters:
+        - name: body
+          in: body
+          description: teacher data
+          required: true
+          schema:
+            type: object
+            description: CreateUserDto
+            required:
+              - email
+              - password
+              - fullName
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+              fullName:
+                type: string
+      responses:
+        201:
+          description: "Created"
+        400:
+          description: "Bad Request"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+  /auth/chairSignup:
+    post:
+      tags:
+        - auth
+      summary: "Add chair to database"
+      parameters:
+        - name: body
+          in: body
+          description: chair data
+          required: true
+          schema:
+            type: object
+            description: CreateUserDto
+            required:
+              - email
+              - password
+              - fullName
+              - department
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+              fullName:
+                type: string
+              department:
+                type: string
+      responses:
+        201:
+          description: "Created"
+        400:
+          description: "Bad Request"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
 
 # definitions
 definitions:
@@ -160,13 +257,23 @@ definitions:
       - CHAIR
       - SYSTEM_ADMINISTRATOR
 
+  Department:
+    type: string
+    description: |
+      This is mainly to keep the strings consistent and less prone to errors. Should be used wherever department String is required.
+    enum:
+      - COMPUTER_ENGINEERING
+      - SOFTWARE_ENGINEERING
+      - MECHANICAL_ENGINEERING
+      - CIVIL_ENGINEERING
+
   User:
     type: object
     description: This model represents each and every user in our system, it is required for authentication system.
     required:
-        - email
-        - password
-        - role
+      - email
+      - password
+      - role
     properties:
       id:
         type: number
@@ -179,94 +286,94 @@ definitions:
         description: User's plain text password, will be encrypted in the database.
       role:
         type: string
-        $ref: '#/definitions/UserRole'
+        $ref: "#/definitions/UserRole"
       student:
         type: object
-        $ref: '#/definitions/Student'
+        $ref: "#/definitions/Student"
       parent:
         type: object
-        $ref: '#/definitions/Parent'
+        $ref: "#/definitions/Parent"
 
   Student:
     type: object
     required:
       - fullName
       - userId
-    properties: 
+    properties:
       id:
         type: number
         description: Autogenerated
       fullName:
         type: string
         description: The student's full name
-      
+
       user:
         type: object
-        $ref: '#/definitions/User'
+        $ref: "#/definitions/User"
       userId:
         type: number
         description: The id of the user related to this student
       parent:
         type: object
-        $ref: '#/definitions/Parent'
+        $ref: "#/definitions/Parent"
       courses:
         type: array
-        items: 
-          $ref: '#/definitions/CourseGroup'
+        items:
+          $ref: "#/definitions/CourseGroup"
 
   Parent:
     type: object
     required:
       - fullName
       - userId
-    properties: 
+    properties:
       id:
         type: number
         description: Autogenerated
       fullName:
         type: string
         description: The parent's full name
-      
+
       user:
         type: object
-        $ref: '#/definitions/User'
+        $ref: "#/definitions/User"
       userId:
         type: number
         description: The id of the user related to this parent
       children:
         type: array
-        items: 
-          $ref: '#/definitions/Student'
+        items:
+          $ref: "#/definitions/Student"
   Teacher:
     type: object
     required:
       - fullName
       - userId
-    properties: 
+    properties:
       id:
         type: number
         description: Autogenerated
       fullName:
         type: string
         description: The teacher's full name
-      
+
       user:
         type: object
-        $ref: '#/definitions/User'
+        $ref: "#/definitions/User"
       userId:
         type: number
         description: The id of the user related to this teacher
       courseGroups:
         type: array
-        items: 
-          $ref: '#/definitions/CourseGroup'
+        items:
+          $ref: "#/definitions/CourseGroup"
 
   CourseGroup:
     type: object
     description: This model represents each and every coure-group our system contains.
     required:
       - name
-    properties: 
+    properties:
       id:
         type: number
         description: Autogenerated
@@ -276,11 +383,11 @@ definitions:
           The course name, usually contains the group number aswell. example: CMSE353(01)
       teacher:
         type: object
-        $ref: '#/definitions/Teacher'
+        $ref: "#/definitions/Teacher"
       teacherId:
         type: number
         description: The id of the teacher related to this coursegroup
       students:
         type: array
-        items: 
-          $ref: '#/definitions/Student'
+        items:
+          $ref: "#/definitions/Student"

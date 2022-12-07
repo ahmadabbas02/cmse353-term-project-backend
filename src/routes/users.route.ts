@@ -3,6 +3,8 @@ import UsersController from "@controllers/users.controller";
 import { CreateUserDto } from "@dtos/users.dto";
 import { Routes } from "@interfaces/routes.interface";
 import validationMiddleware from "@middlewares/validation.middleware";
+import { isLoggedIn, isSpecificRole } from "@/middlewares/auth.middleware";
+import { UserRole } from "@/utils/consts";
 
 class UsersRoute implements Routes {
   public path = "/users";
@@ -14,11 +16,17 @@ class UsersRoute implements Routes {
   }
 
   private initializeRoutes() {
-    this.router.get(`${this.path}`, this.usersController.getUsers);
+    this.router.get(`${this.path}`, isLoggedIn, isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR), this.usersController.getUsers);
 
-    this.router.get(`${this.path}/:id`, this.usersController.getUserById);
-    this.router.put(`${this.path}/:id`, validationMiddleware(CreateUserDto, "body", true), this.usersController.updateUser);
-    this.router.delete(`${this.path}/:id`, this.usersController.deleteUser);
+    this.router.get(`${this.path}/:id`, isLoggedIn, isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR), this.usersController.getUserById);
+    this.router.put(
+      `${this.path}/:id`,
+      isLoggedIn,
+      isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR),
+      validationMiddleware(CreateUserDto, "body", true),
+      this.usersController.updateUser,
+    );
+    this.router.delete(`${this.path}/:id`, isLoggedIn, isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR), this.usersController.deleteUser);
   }
 }
 

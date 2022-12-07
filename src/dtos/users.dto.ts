@@ -11,6 +11,11 @@ export class CreateUserDto {
   public fullName: string;
 }
 
+export class ChairUserDto extends CreateUserDto {
+  @IsString()
+  public department: string;
+}
+
 export class LoginUserDto {
   @IsEmail()
   public email: string;

@@ -1,5 +1,5 @@
-import { Parent, Student, Teacher, User } from "@prisma/client";
-import { CreateUserDto, LoginUserDto } from "@dtos/users.dto";
+import { Chair, Parent, Student, Teacher, User } from "@prisma/client";
+import { ChairUserDto, CreateUserDto, LoginUserDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/HttpException";
 import { isEmpty } from "@utils/util";
 import { UserRole } from "@utils/consts";
@@ -10,6 +10,7 @@ class AuthService {
   private students = prisma.student;
   private parents = prisma.parent;
   private teachers = prisma.teacher;
+  private chairs = prisma.chair;
 
   public async registerStudent(studentData: CreateUserDto): Promise<Student> {
     if (isEmpty(studentData)) throw new HttpException(400, "studentData is empty");
@@ -71,23 +72,29 @@ class AuthService {
     return createdTeacherData;
   }
 
-  public async registerChair(chairData: CreateUserDto): Promise<User> {
+  public async registerChair(chairData: ChairUserDto): Promise<Chair> {
     if (isEmpty(chairData)) throw new HttpException(400, "chairData is empty");
 
     const findUser: User = await this.users.findUnique({ where: { email: chairData.email } });
     if (findUser) throw new HttpException(409, `This email ${chairData.email} already exists`);
 
-    const { email, password } = chairData;
+    const { fullName, email, password, department } = chairData;
 
-    const createdUserData: Promise<User> = this.users.create({
+    const createdChairData: Promise<Chair> = this.chairs.create({
       data: {
-        email,
-        password,
-        role: UserRole.CHAIR,
+        fullName,
+        department,
+        user: {
+          create: {
+            email,
+            password,
+            role: UserRole.CHAIR,
+          },
+        },
       },
     });
 
-    return createdUserData;
+    return createdChairData;
   }
 
   public async registerAdministrator(administratorData: CreateUserDto): Promise<User> {
