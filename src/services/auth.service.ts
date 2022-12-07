@@ -2,8 +2,8 @@ import { Parent, Student, Teacher, User } from "@prisma/client";
 import { CreateUserDto, LoginUserDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/HttpException";
 import { isEmpty } from "@utils/util";
-import { UserRole } from "@/utils/consts";
-import { prisma } from "@/utils/db";
+import { UserRole } from "@utils/consts";
+import { prisma } from "@utils/db";
 
 class AuthService {
   public users = prisma.user;

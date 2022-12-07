@@ -9,7 +9,7 @@ class CoursesController {
 
   public getAllCourses = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const allCourses: CourseGroup[] = await this.coursesService.findAllCourses();
+      const allCourses: CourseGroup[] = await this.coursesService.getAllCourses();
 
       res.status(200).json({ data: allCourses, message: "Successfully retrieved all courses" });
     } catch (error) {

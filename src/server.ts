@@ -4,10 +4,11 @@ import IndexRoute from "@routes/index.route";
 import UsersRoute from "@routes/users.route";
 import validateEnv from "@utils/validateEnv";
 import CoursesRoutes from "./routes/courses.route";
+import TeachersRoutes from "./routes/teachers.route";
 
 validateEnv();
 
-const app = new App([new IndexRoute(), new UsersRoute(), new AuthRoute(), new CoursesRoutes()]);
+const app = new App([new IndexRoute(), new UsersRoute(), new AuthRoute(), new CoursesRoutes(), new TeachersRoutes()]);
 
 process
   .on("unhandledRejection", (reason, p) => {

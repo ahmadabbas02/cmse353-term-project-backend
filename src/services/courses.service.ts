@@ -12,7 +12,7 @@ class CoursesService {
   teachers = prisma.teacher;
   attendanceRecords = prisma.attendanceRecord;
 
-  public async findAllCourses() {
+  public async getAllCourses() {
     const courses = this.courses.findMany();
 
     return courses;
@@ -123,57 +123,6 @@ class CoursesService {
     });
 
     return updatedCourse;
-  }
-
-  public async addAttendanceRecords(attendanceData: AddAttendanceRecordDto) {
-    const studentIds = (
-      await this.students.findMany({
-        where: {
-          courses: {
-            every: {
-              id: attendanceData.courseId,
-            },
-          },
-        },
-      })
-    ).map(student => student.id);
-
-    // Create attendance record for each student taking that course and mark as not present
-    const createdAttendanceRecords = studentIds.map(async studentId => {
-      const createdRecord = await this.attendanceRecords.create({
-        data: {
-          courseGroupId: attendanceData.courseId,
-          dateTime: new Date(attendanceData.dateTime),
-          studentId,
-          isPresent: false,
-        },
-      });
-      return createdRecord;
-    });
-    return createdAttendanceRecords;
-  }
-
-  public async markAttendanceRecordPresent(attendanceData: UpdateAttendanceRecordDto, req: RequestWithSessionData) {
-    const attendanceRecord = await this.attendanceRecords.findUnique({
-      where: { id: attendanceData.attendanceRecordId },
-    });
-
-    const course = await this.courses.findUnique({
-      where: { id: attendanceRecord.courseGroupId },
-    });
-
-    const teacherId = (await this.teachers.findFirst({ where: { userId: req.session.user.id } })).id;
-
-    if (course.teacherId !== teacherId) {
-      throw new HttpException(401, `You should be the course teacher to access!`);
-    }
-
-    const updatedAttendanceRecord = await this.attendanceRecords.update({
-      where: { id: attendanceData.attendanceRecordId },
-      data: { isPresent: true },
-    });
-
-    return updatedAttendanceRecord;
   }
 }
 

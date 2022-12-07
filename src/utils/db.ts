@@ -11,10 +11,10 @@ export const prisma =
   global.prisma ||
   new PrismaClient({
     log: [
-      {
-        emit: "event",
-        level: "query",
-      },
+      // {
+      //   emit: "stdout",
+      //   level: "query",
+      // },
       {
         emit: "stdout",
         level: "error",
@@ -38,12 +38,6 @@ prisma.$use(
     decryptFn: (encrypted: string) => decrypt(encrypted),
   }),
 );
-
-prisma.$on("query", e => {
-  console.log("Query: " + e.query);
-  console.log("Params: " + e.params);
-  console.log("Duration: " + e.duration + "ms");
-});
 
 /**
  * @method encrypt

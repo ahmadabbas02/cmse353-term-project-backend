@@ -13,7 +13,7 @@ import { Routes } from "@interfaces/routes.interface";
 import errorMiddleware from "@middlewares/error.middleware";
 import { logger, stream } from "@utils/logger";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@utils/db";
 
 class App {
   public app: express.Application;

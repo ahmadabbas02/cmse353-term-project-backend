@@ -1,4 +1,4 @@
-import { IsDateString, IsString } from "class-validator";
+import { IsBoolean, IsDateString, IsString } from "class-validator";
 
 export class CreateCourseDto {
   @IsString()
@@ -19,6 +19,9 @@ export class AddAttendanceRecordDto {
 export class UpdateAttendanceRecordDto {
   @IsString()
   public attendanceRecordId: string;
+
+  @IsBoolean()
+  public isPresent: boolean;
 }
 
 export class AddStudentToCourseDto {
