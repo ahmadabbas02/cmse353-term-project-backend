@@ -7,10 +7,10 @@ import { prisma } from "@/utils/db";
 import { isEmpty } from "class-validator";
 
 class CoursesService {
-  courses = prisma.courseGroup;
-  students = prisma.student;
-  teachers = prisma.teacher;
-  attendanceRecords = prisma.attendanceRecord;
+  private courses = prisma.courseGroup;
+  private students = prisma.student;
+  private teachers = prisma.teacher;
+  private attendanceRecords = prisma.attendanceRecord;
 
   public async getAllCourses() {
     const courses = this.courses.findMany();

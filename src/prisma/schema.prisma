@@ -19,16 +19,18 @@ model User {
   student Student?
   parent  Parent?
   teacher Teacher?
+  chair   Chair?
 }
 
 model Student {
-  id       String @id @default(uuid())
-  fullName String
+  id         String @id @default(uuid())
+  fullName   String
+  department String @default("Software Engineering")
 
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @unique
 
-  parent   Parent? @relation(fields: [parentId], references: [id])
+  parent   Parent? @relation(fields: [parentId], references: [id], onDelete: SetNull)
   parentId String?
 
   courses           CourseGroup[]
@@ -39,7 +41,7 @@ model Parent {
   id       String @id @default(uuid())
   fullName String
 
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @unique
 
   children Student[]
@@ -49,17 +51,26 @@ model Teacher {
   id       String @id @default(uuid())
   fullName String
 
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @unique
 
   courseGroups CourseGroup[]
+}
+
+model Chair {
+  id         String @id @default(uuid())
+  fullName   String
+  department String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
 }
 
 model CourseGroup {
   id   String @id @default(uuid())
   name String @unique
 
-  teacher   Teacher @relation(fields: [teacherId], references: [id])
+  teacher   Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
   teacherId String
 
   students          Student[]
@@ -69,10 +80,10 @@ model CourseGroup {
 model AttendanceRecord {
   id String @id @default(uuid())
 
-  student   Student @relation(fields: [studentId], references: [id])
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId String
 
-  courseGroup   CourseGroup @relation(fields: [courseGroupId], references: [id])
+  courseGroup   CourseGroup @relation(fields: [courseGroupId], references: [id], onDelete: Cascade)
   courseGroupId String
 
   dateTime DateTime

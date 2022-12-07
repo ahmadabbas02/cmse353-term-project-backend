@@ -1,5 +1,4 @@
-import { AddAttendanceRecordDto, AddStudentToCourseDto, CreateCourseDto, UpdateAttendanceRecordDto } from "@/dtos/courses.dto";
-import { RequestWithSessionData } from "@/interfaces/auth.interface";
+import { AddStudentToCourseDto, CreateCourseDto } from "@/dtos/courses.dto";
 import CoursesService from "@/services/courses.service";
 import { CourseGroup } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
@@ -45,28 +44,6 @@ class CoursesController {
       const createdCourse: CourseGroup = await this.coursesService.removeStudent(data);
 
       res.status(201).json({ data: createdCourse, message: "Removed student successfully!" });
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  public addAttendanceRecord = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const data: AddAttendanceRecordDto = req.body;
-      const createdAttendanceRecords = await this.coursesService.addAttendanceRecords(data);
-
-      res.status(201).json({ data: createdAttendanceRecords, message: "Added records successfully!" });
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  public markAttendanceRecordPresent = async (req: RequestWithSessionData, res: Response, next: NextFunction) => {
-    try {
-      const data: UpdateAttendanceRecordDto = req.body;
-      const attendanceRecord = await this.coursesService.markAttendanceRecordPresent(data, req);
-
-      res.status(201).json({ data: attendanceRecord, message: "Marked record as present successfully!" });
     } catch (error) {
       next(error);
     }

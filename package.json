@@ -1,12 +1,13 @@
 {
   "name": "cmse353-term-project",
   "version": "0.0.0",
-  "description": "TypeScript + Prisma + MySQL + Express API Server",
+  "description": "TypeScript + Prisma + SQLite + Express API Server",
   "author": "",
   "license": "ISC",
   "scripts": {
     "start": "npm run build && cross-env NODE_ENV=production node dist/server.js",
     "dev": "cross-env NODE_ENV=development nodemon",
+    "seed": "dotenv -e .env.development.local -- ts-node src/prisma/seed.ts",
     "build": "swc src -d dist --source-maps --copy-files",
     "build:tsc": "tsc && tsc-alias",
     "test": "jest --forceExit --detectOpenHandles",

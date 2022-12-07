@@ -42,23 +42,6 @@ class CoursesRoutes implements Routes {
       validationMiddleware(AddStudentToCourseDto, "body"),
       this.coursesController.removeStudentFromCourse,
     );
-
-    // Teacher only
-    this.router.post(
-      `${this.path}/createAttendanceRecords`,
-      isLoggedIn,
-      isSpecificRole(UserRole.TEACHER),
-      validationMiddleware(AddAttendanceRecordDto, "body"),
-      this.coursesController.addAttendanceRecord,
-    );
-
-    this.router.post(
-      `${this.path}/markAttendanceRecordPresent`,
-      isLoggedIn,
-      isSpecificRole(UserRole.TEACHER),
-      validationMiddleware(UpdateAttendanceRecordDto, "body"),
-      this.coursesController.markAttendanceRecordPresent,
-    );
   }
 }
 

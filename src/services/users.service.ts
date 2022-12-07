@@ -5,7 +5,7 @@ import { excludeFromUser, excludeFromUsers, isEmpty } from "@utils/util";
 import { prisma } from "@/utils/db";
 
 class UserService {
-  public users = prisma.user;
+  private users = prisma.user;
 
   public async findAllUser(): Promise<User[]> {
     const allUser: User[] = await this.users.findMany({

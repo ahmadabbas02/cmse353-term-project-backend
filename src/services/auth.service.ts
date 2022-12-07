@@ -6,10 +6,10 @@ import { UserRole } from "@utils/consts";
 import { prisma } from "@utils/db";
 
 class AuthService {
-  public users = prisma.user;
-  public students = prisma.student;
-  public parents = prisma.parent;
-  public teachers = prisma.teacher;
+  private users = prisma.user;
+  private students = prisma.student;
+  private parents = prisma.parent;
+  private teachers = prisma.teacher;
 
   public async registerStudent(studentData: CreateUserDto): Promise<Student> {
     if (isEmpty(studentData)) throw new HttpException(400, "studentData is empty");
