@@ -5,7 +5,7 @@ import validationMiddleware from "@middlewares/validation.middleware";
 import CoursesController from "@/controllers/courses.controller";
 import { isLoggedIn, isSpecificRole } from "@/middlewares/auth.middleware";
 import { UserRole } from "@/utils/consts";
-import { AddAttendanceRecordDto, AddStudentToCourseDto, CreateCourseDto, UpdateAttendanceRecordDto } from "@/dtos/courses.dto";
+import { AddStudentToCourseDto, CreateCourseDto } from "@/dtos/courses.dto";
 
 class CoursesRoutes implements Routes {
   public path = "/courses";
