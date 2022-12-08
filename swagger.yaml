@@ -1,110 +1,17 @@
 swagger: "2.0"
-info: { title: "Secure Attendance System API Docs", version: "1.0", description: "This was created as CMSE353 term project for EMU." }
+info:
+  {
+    title: "Secure Attendance System API Docs",
+    version: "1.0",
+    description: "This was created as CMSE353 term project for EMU.",
+  }
 tags:
-  - name: users
-    description: users API
   - name: auth
     description: Routes related to authentication
+  - name: courses
+    description: Routes related to courses operations
 
 paths:
-  /users:
-    get:
-      tags:
-        - users
-      summary: Find All Users
-      responses:
-        200:
-          description: "OK"
-        500:
-          description: "Server Error"
-
-    # [POST] users
-    post:
-      tags:
-        - users
-      summary: Add User
-      parameters:
-        - name: body
-          in: body
-          description: user Data
-          required: true
-          schema:
-            $ref: "#/definitions/User"
-      responses:
-        201:
-          description: "Created"
-        400:
-          description: "Bad Request"
-        409:
-          description: "Conflict"
-        500:
-          description: "Server Error"
-
-  /users/{id}:
-    get:
-      tags:
-        - users
-      summary: Find User By Id
-      parameters:
-        - name: id
-          in: path
-          description: User Id
-          required: true
-          type: integer
-      responses:
-        200:
-          description: "OK"
-        409:
-          description: "Conflict"
-        500:
-          description: "Server Error"
-
-    # [PUT] users/id
-    put:
-      tags:
-        - users
-      summary: Update User By Id
-      parameters:
-        - name: id
-          in: path
-          description: user Id
-          required: true
-          type: integer
-        - name: body
-          in: body
-          description: user Data
-          required: true
-          schema:
-            $ref: "#/definitions/User"
-      responses:
-        200:
-          description: "OK"
-        400:
-          description: "Bad Request"
-        409:
-          description: "Conflict"
-        500:
-          description: "Server Error"
-
-    # [DELETE] users/id
-    delete:
-      tags:
-        - users
-      summary: Delete User By Id
-      parameters:
-        - name: id
-          in: path
-          description: user Id
-          required: true
-          type: integer
-      responses:
-        200:
-          description: "OK"
-        409:
-          description: "Conflict"
-        500:
-          description: "Server Error"
-
   /auth/studentSignup:
     post:
       tags:
@@ -129,6 +36,9 @@ paths:
                 type: string
               fullName:
                 type: string
+              department:
+                type: string
+                default: "Software Engineering"
       responses:
         201:
           description: "Created"
@@ -243,6 +153,215 @@ paths:
           description: "Conflict"
         500:
           description: "Server Error"
+
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Login
+      parameters:
+        - name: body
+          in: body
+          description: user data
+          required: true
+          schema:
+            type: object
+            description: LoginUserDto
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      responses:
+        200:
+          description: "Success"
+        400:
+          description: "Bad Request"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+  /auth/logout:
+    post:
+      tags:
+        - auth
+      summary: Logout
+      responses:
+        200:
+          description: "Success"
+        400:
+          description: "Bad Request"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+  
+  /courses:
+    get:
+      tags:
+        - courses
+      summary: Get all courses
+      description: Returns all courses saved in database
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema: 
+            type: object
+            properties: 
+              data:
+                type: array
+                items:
+                  type: object
+                  properties: 
+                    id:
+                      type: string
+                      description: The course id
+                    name:
+                      type: string
+                      description: The course name(usually includes group number)
+                    teacherId:
+                      type: string
+                      description: The id of the teacher teaching this course
+              message:
+                type: string
+  
+  /courses/create:
+    post:
+      tags:
+        - courses
+      summary: Create course
+      description: Add a new course to database
+      parameters:
+        - name: body
+          in: body
+          description: Course data
+          required: true
+          schema:
+            type: object
+            description: CreateCourseDto
+            required:
+              - name
+              - teacherId
+            properties:
+              name:
+                type: string
+                description: The name of the course
+              teacherId:
+                type: string
+                description: The name of the teacher teaching this course
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema: 
+            type: object
+            properties: 
+              data:
+                type: object
+                properties: 
+                  id:
+                    type: string
+                    description: The course id
+                  name:
+                    type: string
+                    description: The course name(usually includes group number)
+                  teacherId:
+                    type: string
+                    description: The id of the teacher teaching this course
+              message:
+                type: string
+                default: Created course successfully!
+
+  /courses/addStudentToCourse:
+    post:
+      tags:
+        - courses
+      summary: Add student to course
+      description: Add the student to the specified course
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            description: AddStudentToCourseDto
+            required:
+              - studentId
+              - courseId
+            properties:
+              studentId:
+                type: string
+                description: The id of the student to be added to the course
+              courseId:
+                type: string
+                description: The id of the course the student is to be added to
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema: 
+            type: object
+            properties: 
+              data:
+                type: object
+                properties: 
+                  id:
+                    type: string
+                    description: The course id
+                  name:
+                    type: string
+                    description: The course name(usually includes group number)
+                  teacherId:
+                    type: string
+                    description: The id of the teacher teaching this course
+              message:
+                type: string
+                default: Added student successfully!
+
+  /courses/removeStudentFromCourse:
+    post:
+      tags:
+        - courses
+      summary: Remove student from course
+      description: Remove the student from the specified course, this will delete the attendance records related to it as well.
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            description: AddStudentToCourseDto
+            required:
+              - studentId
+              - courseId
+            properties:
+              studentId:
+                type: string
+                description: The id of the student to be removed from the course
+              courseId:
+                type: string
+                description: The id of the course the student is to be removed from
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema: 
+            type: object
+            properties: 
+              message:
+                type: string
+                default: Removed student successfully!
+
+
 
 # definitions
 definitions:
