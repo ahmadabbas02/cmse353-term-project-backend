@@ -1,10 +1,9 @@
-import { AddAttendanceRecordDto, AddStudentToCourseDto, CreateCourseDto, UpdateAttendanceRecordDto } from "@/dtos/courses.dto";
-import { HttpException } from "@/exceptions/HttpException";
-import { RequestWithSessionData } from "@/interfaces/auth.interface";
-import { CourseGroup } from "@prisma/client";
-import { prisma } from "@/utils/db";
-
 import { isEmpty } from "class-validator";
+import { CourseGroup } from "@prisma/client";
+
+import { AddStudentToCourseDto, CreateCourseDto } from "@/dtos/courses.dto";
+import { HttpException } from "@/exceptions/HttpException";
+import { prisma } from "@/utils/db";
 
 class CoursesService {
   private courses = prisma.courseGroup;

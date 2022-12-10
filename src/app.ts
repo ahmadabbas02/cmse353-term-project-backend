@@ -55,6 +55,9 @@ class App {
     this.app.use(cookieParser());
     this.app.use(
       expressSession({
+        cookie: {
+          maxAge: 1 * 24 * 60 * 60 * 1000, // ms
+        },
         secret: process.env.SECRET_KEY,
         resave: false,
         saveUninitialized: false,

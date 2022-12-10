@@ -1,4 +1,4 @@
-import { CourseGroup, Student, Teacher, User } from "@prisma/client";
+import { AttendanceRecord, CourseGroup, Student, Teacher, User } from "@prisma/client";
 
 export const users: User[] = [
   {

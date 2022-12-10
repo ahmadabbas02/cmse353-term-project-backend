@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { courses, students, teachers, users } from "./dummyData";
 import { prisma } from "../utils/db";
 
