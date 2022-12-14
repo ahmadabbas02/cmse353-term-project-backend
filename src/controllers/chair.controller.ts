@@ -5,11 +5,23 @@ import { NextFunction, Response } from "express";
 class ChairController {
   private chairService = new ChairService();
 
-  public getDepartmentStudents = (req: RequestWithSessionData, res: Response, next: NextFunction) => {
+  public getDepartmentStudents = async (req: RequestWithSessionData, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const students = this.chairService.getDepartmentStudents(req);
+      const students = await this.chairService.getDepartmentStudents(req);
 
       res.status(200).json({ data: students, message: "departmentStudents" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getStudentAttendanceRecords = async (req: RequestWithSessionData, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = req.session.user.id;
+      const studentId = req.params.id;
+      const records = await this.chairService.getStudentAttendanceRecord(userId, studentId);
+
+      res.status(200).json({ data: records, message: "attendanceRecords" });
     } catch (error) {
       next(error);
     }

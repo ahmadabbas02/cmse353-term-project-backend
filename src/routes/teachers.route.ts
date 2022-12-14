@@ -23,6 +23,9 @@ class TeachersRoutes implements Routes {
     // Get students of the course with specified id
     this.router.get(`${this.path}/course/:id`, isLoggedIn, isSpecificRole(UserRole.TEACHER), this.teachersController.getStudents);
 
+    // Get attendance records the course with specified id
+    this.router.get(`${this.path}/course/records/:id`, isLoggedIn, isSpecificRole(UserRole.TEACHER), this.teachersController.getAttendanceRecords);
+
     // Generate attendance record for the specified course id and date time passed through the body
     this.router.post(
       `${this.path}/course/createAttendanceRecords`,

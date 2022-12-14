@@ -1,4 +1,4 @@
-import { Chair, Parent, Student, Teacher, User } from "@prisma/client";
+import { Chair, Student, Teacher, User } from "@prisma/client";
 import { ChairUserDto, CreateUserDto, LoginUserDto, ParentUserDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/HttpException";
 import { isEmpty } from "@utils/util";

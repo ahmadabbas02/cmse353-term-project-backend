@@ -33,7 +33,7 @@ class TeachersController {
       const data: UpdateAttendanceRecordDto = req.body;
       const attendanceRecord = await this.teachersSerivce.setAttendanceRecord(data, req);
 
-      res.status(201).json({ data: attendanceRecord, message: "Marked record as present successfully!" });
+      res.status(202).json({ data: attendanceRecord, message: "Marked record as present successfully!" });
     } catch (error) {
       next(error);
     }
@@ -43,7 +43,17 @@ class TeachersController {
     try {
       const students = await this.teachersSerivce.getStudents(req.params.id, req.session.user.id);
 
-      res.status(201).json({ data: students, message: "Students retrieved!" });
+      res.status(200).json({ data: students, message: "Students retrieved!" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getAttendanceRecords = async (req: RequestWithSessionData, res: Response, next: NextFunction) => {
+    try {
+      const records = await this.teachersSerivce.getAttendanceRecords(req.params.id, req.session.user.id);
+
+      res.status(200).json({ data: records, message: "Attendance records retrieved!" });
     } catch (error) {
       next(error);
     }

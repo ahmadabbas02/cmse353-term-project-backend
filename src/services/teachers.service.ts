@@ -89,6 +89,23 @@ class TeachersService {
     });
     return students;
   }
+
+  public async getAttendanceRecords(courseId: string, userId: string) {
+    const course = await this.courses.findFirst({ where: { id: courseId, teacher: { userId } } });
+    if (!course) throw new HttpException(403, `You aren't a teacher of this course.`);
+
+    const records = this.attendanceRecords.groupBy({
+      where: {
+        courseGroupId: courseId,
+      },
+      by: ["dateTime"],
+      orderBy: {
+        dateTime: "desc",
+      },
+    });
+
+    return records;
+  }
 }
 
 export default TeachersService;
