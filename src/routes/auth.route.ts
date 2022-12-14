@@ -1,6 +1,6 @@
 import { Router } from "express";
 import AuthController from "@controllers/auth.controller";
-import { ChairUserDto, CreateUserDto, LoginUserDto } from "@dtos/users.dto";
+import { ChairUserDto, CreateUserDto, LoginUserDto, ParentUserDto } from "@dtos/users.dto";
 import { Routes } from "@interfaces/routes.interface";
 import validationMiddleware from "@middlewares/validation.middleware";
 import { isLoggedIn, isSpecificRole } from "@/middlewares/auth.middleware";
@@ -27,7 +27,7 @@ class AuthRoute implements Routes {
       `${this.path}/parentSignup`,
       isLoggedIn,
       isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR),
-      validationMiddleware(CreateUserDto, "body"),
+      validationMiddleware(ParentUserDto, "body"),
       this.authController.registerParent,
     );
     this.router.post(

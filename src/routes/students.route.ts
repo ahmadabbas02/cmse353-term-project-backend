@@ -17,7 +17,7 @@ class StudentsRoute implements Routes {
     this.router.get(`${this.path}/courses`, isLoggedIn, isSpecificRole(UserRole.STUDENT), this.studentController.getCourses);
 
     // Return attendance records for the specific course
-    this.router.get(`${this.path}/course/:id`, isLoggedIn, isSpecificRole(UserRole.STUDENT), this.studentController.getAttendanceRecords);
+    this.router.get(`${this.path}/courses/:id`, isLoggedIn, isSpecificRole(UserRole.STUDENT), this.studentController.getAttendanceRecords);
   }
 }
 

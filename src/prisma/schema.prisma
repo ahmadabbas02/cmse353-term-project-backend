@@ -12,7 +12,7 @@ datasource db {
 
 model User {
   id       String @id @default(uuid())
-  email    String @unique /// @encrypted
+  email    String @unique
   password String /// @encrypted
   role     String @default("Student")
 

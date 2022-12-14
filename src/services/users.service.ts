@@ -13,6 +13,7 @@ class UserService {
         student: true,
         parent: true,
         teacher: true,
+        chair: true,
       },
     });
 
@@ -24,6 +25,12 @@ class UserService {
 
     const findUser: User = await this.users.findUnique({
       where: { id: userId },
+      include: {
+        student: true,
+        parent: true,
+        teacher: true,
+        chair: true,
+      },
     });
     if (!findUser) throw new HttpException(409, "User doesn't exist");
 

@@ -1,4 +1,4 @@
-import { IsEmail, IsString } from "class-validator";
+import { IsArray, IsEmail, IsString } from "class-validator";
 
 export class CreateUserDto {
   @IsEmail()
@@ -9,6 +9,11 @@ export class CreateUserDto {
 
   @IsString()
   public fullName: string;
+}
+
+export class ParentUserDto extends CreateUserDto {
+  @IsArray()
+  public studentIds: string[];
 }
 
 export class ChairUserDto extends CreateUserDto {

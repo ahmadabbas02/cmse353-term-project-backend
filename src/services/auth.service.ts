@@ -1,5 +1,5 @@
 import { Chair, Parent, Student, Teacher, User } from "@prisma/client";
-import { ChairUserDto, CreateUserDto, LoginUserDto } from "@dtos/users.dto";
+import { ChairUserDto, CreateUserDto, LoginUserDto, ParentUserDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/HttpException";
 import { isEmpty } from "@utils/util";
 import { UserRole } from "@utils/consts";
@@ -32,15 +32,15 @@ class AuthService {
     return createdStudentData;
   }
 
-  public async registerParent(parentData: CreateUserDto): Promise<Teacher> {
+  public async registerParent(parentData: ParentUserDto) {
     if (isEmpty(parentData)) throw new HttpException(400, "parentData is empty");
 
     const findUser: User = await this.users.findUnique({ where: { email: parentData.email } });
     if (findUser) throw new HttpException(409, `This email ${parentData.email} already exists`);
 
-    const { email, password, fullName } = parentData;
+    const { email, password, fullName, studentIds } = parentData;
 
-    const createdParentData: Promise<Parent> = this.parents.create({
+    const createdParentData = await this.parents.create({
       data: {
         fullName: fullName,
         user: {
@@ -49,7 +49,18 @@ class AuthService {
       },
     });
 
-    return createdParentData;
+    const children = await this.students.updateMany({
+      where: {
+        id: {
+          in: studentIds,
+        },
+      },
+      data: {
+        parentId: createdParentData.id,
+      },
+    });
+
+    return { parent: createdParentData, children };
   }
 
   public async registerTeacher(teacherData: CreateUserDto): Promise<Teacher> {

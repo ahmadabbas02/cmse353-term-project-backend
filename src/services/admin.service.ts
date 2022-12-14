@@ -5,10 +5,9 @@ import { AddStudentToCourseDto, CreateCourseDto } from "@/dtos/courses.dto";
 import { HttpException } from "@/exceptions/HttpException";
 import { prisma } from "@/utils/db";
 
-class CoursesService {
+class AdminService {
   private courses = prisma.courseGroup;
   private students = prisma.student;
-  private teachers = prisma.teacher;
   private attendanceRecords = prisma.attendanceRecord;
 
   public async getAllCourses() {
@@ -125,4 +124,4 @@ class CoursesService {
   }
 }
 
-export default CoursesService;
+export default AdminService;
