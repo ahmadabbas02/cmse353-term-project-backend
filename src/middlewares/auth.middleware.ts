@@ -6,35 +6,39 @@ import { prisma } from "@/utils/db";
 
 export const isLoggedIn = async (req: RequestWithSessionData, res: Response, next: NextFunction) => {
   try {
-    if (req.session) {
-      const sessions = prisma.session;
-      const users = prisma.user;
+    if (!req.session) {
+      next(new HttpException(404, "Failed to find session in request"));
+      return;
+    }
 
-      const sessionId = req.sessionID;
-      const findSession = await sessions.findUnique({ where: { id: sessionId } });
+    const sessions = prisma.session;
+    const users = prisma.user;
 
-      if (findSession) {
-        const { user } = JSON.parse(findSession.data);
-        if (req.session.user.id === user.id) {
-          const findUser = await users.findUnique({ where: { id: req.session.user.id } });
+    const sessionId = req.sessionID;
+    const findSession = await sessions.findUnique({ where: { id: sessionId } });
 
-          if (findUser) {
-            req.session.user = excludeFromUser(findUser, "password");
-            next();
-          } else {
-            next(new HttpException(401, "Session has been tampered!"));
-          }
-        } else {
-          next(new HttpException(401, "Session has been tampered with!"));
-        }
-      } else {
-        next(new HttpException(401, "Wrong authentication token"));
+    if (!findSession) {
+      next(new HttpException(401, "Failed to find session"));
+      return;
+    }
+
+    const { user } = JSON.parse(findSession.data);
+    if (req.session.user.id === user.id) {
+      const findUser = await users.findUnique({ where: { id: req.session.user.id } });
+
+      if (!findUser) {
+        next(new HttpException(401, "User has been tampered!"));
+        return;
       }
+
+      req.session.user = excludeFromUser(findUser, "password");
+      next();
     } else {
-      next(new HttpException(404, "Authentication token missing"));
+      next(new HttpException(401, "Session has been tampered!"));
     }
   } catch (error) {
-    next(new HttpException(401, "Wrong authentication token"));
+    console.log(error);
+    next(new HttpException(401, error));
   }
 };
 

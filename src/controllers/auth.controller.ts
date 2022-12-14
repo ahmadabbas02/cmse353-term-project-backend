@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { Chair, Parent, Student, Teacher, User } from "@prisma/client";
+import { Chair, Student, Teacher, User } from "@prisma/client";
 import { ChairUserDto, CreateUserDto, LoginUserDto, ParentUserDto } from "@dtos/users.dto";
 import AuthService from "@services/auth.service";
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
 import { excludeFromUser } from "@/utils/util";
+import { HttpException } from "@/exceptions/HttpException";
 
 class AuthController {
   public authService = new AuthService();
@@ -66,9 +67,9 @@ class AuthController {
   public logIn = async (req: RequestWithSessionData, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userData: LoginUserDto = req.body;
-      const { findUser } = await this.authService.login(userData);
-      req.session.user = findUser;
-      res.status(200).json({ data: excludeFromUser(findUser, "password"), message: "login" });
+      const user = await this.authService.login(userData);
+      req.session.user = user;
+      res.status(200).json({ data: excludeFromUser(user, "password"), message: "login" });
     } catch (error) {
       next(error);
     }
@@ -83,6 +84,18 @@ class AuthController {
           res.status(200).json({ message: "Logout successful" });
         }
       });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getLoggedInDetails = async (req: RequestWithSessionData, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      if (req.session.user) {
+        res.status(200).json({ data: excludeFromUser(req.session.user, "password"), message: "Logged In details" });
+      } else {
+        next(new HttpException(409, "Failed to find user in session"));
+      }
     } catch (error) {
       next(error);
     }
