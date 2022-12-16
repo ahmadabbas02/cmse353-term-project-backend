@@ -19,9 +19,25 @@ class StudentsService {
           },
         },
       },
+      include: {
+        attendanceRecords: { where: { studentId } },
+      },
     });
 
-    return courses;
+    const attendanceStatus: {
+      courseId: string;
+      presentDays: number;
+      totalDays: number;
+    }[] = [];
+    courses.map(course => {
+      attendanceStatus.push({
+        courseId: course.id,
+        presentDays: course.attendanceRecords.filter(record => record.isPresent).length,
+        totalDays: course.attendanceRecords.length,
+      });
+    });
+
+    return { courses, attendanceStatus };
   }
 
   public async getAttendanceRecords(req: RequestWithSessionData, courseId: string) {

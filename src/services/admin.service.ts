@@ -48,10 +48,9 @@ class AdminService {
       delete student.fullName;
       delete student.userId;
       delete student.parentId;
+      delete student.department;
     });
-    console.log("🚀 ~ file: courses.service.ts ~ line 48 ~ CoursesService ~ addStudent ~ studentsInCourse", studentsInCourse);
     const isStudentInCourse = studentsInCourse.find(student => student.id == studentData.studentId);
-    console.log("🚀 ~ file: courses.service.ts ~ line 50 ~ CoursesService ~ addStudent ~ isStudentInCourse", isStudentInCourse);
 
     // Check if student is already added to course
     if (isStudentInCourse) {
@@ -62,10 +61,9 @@ class AdminService {
     delete student.userId;
     delete student.fullName;
     delete student.parentId;
+    delete student.department;
 
     studentsInCourse.push(student);
-
-    console.log("🚀 ~ file: courses.service.ts ~ line 60 ~ CoursesService ~ addStudent ~ studentsInCourse", studentsInCourse);
 
     const updatedCourse = await this.courses.update({
       where: { id: studentData.courseId },
@@ -93,10 +91,9 @@ class AdminService {
       delete student.fullName;
       delete student.userId;
       delete student.parentId;
+      delete student.department;
     });
-    console.log("🚀 ~ file: courses.service.ts:99 ~ CoursesService ~ removeStudent ~ studentsInCourse", studentsInCourse);
     const isStudentInCourse = studentsInCourse.find(student => student.id == studentData.studentId);
-    console.log("🚀 ~ file: courses.service.ts:101 ~ CoursesService ~ removeStudent ~ isStudentInCourse", isStudentInCourse);
 
     // Check if student is not in course
     if (!isStudentInCourse) {

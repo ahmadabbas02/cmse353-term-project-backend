@@ -21,14 +21,14 @@ class TeachersRoutes implements Routes {
     this.router.get(`${this.path}/courses`, isLoggedIn, isSpecificRole(UserRole.TEACHER), this.teachersController.getCourses);
 
     // Get students of the course with specified id
-    this.router.get(`${this.path}/course/:id`, isLoggedIn, isSpecificRole(UserRole.TEACHER), this.teachersController.getStudents);
+    this.router.get(`${this.path}/courses/:id`, isLoggedIn, isSpecificRole(UserRole.TEACHER), this.teachersController.getStudents);
 
     // Get attendance records the course with specified id
-    this.router.get(`${this.path}/course/records/:id`, isLoggedIn, isSpecificRole(UserRole.TEACHER), this.teachersController.getAttendanceRecords);
+    this.router.get(`${this.path}/courses/records/:id`, isLoggedIn, isSpecificRole(UserRole.TEACHER), this.teachersController.getAttendanceRecords);
 
     // Generate attendance record for the specified course id and date time passed through the body
     this.router.post(
-      `${this.path}/course/createAttendanceRecords`,
+      `${this.path}/courses/createAttendanceRecords`,
       isLoggedIn,
       isSpecificRole(UserRole.TEACHER),
       validationMiddleware(AddAttendanceRecordDto, "body"),
@@ -37,7 +37,7 @@ class TeachersRoutes implements Routes {
 
     // Mark student's attendance record(by id) as the boolean 'isPresent' passed in body
     this.router.post(
-      `${this.path}/course/markAttendanceRecordPresent`,
+      `${this.path}/courses/markAttendanceRecord`,
       isLoggedIn,
       isSpecificRole(UserRole.TEACHER),
       validationMiddleware(UpdateAttendanceRecordDto, "body"),

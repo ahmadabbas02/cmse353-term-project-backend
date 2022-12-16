@@ -9,9 +9,9 @@ class StudentsController {
 
   public getCourses = async (req: RequestWithSessionData, res: Response, next: NextFunction) => {
     try {
-      const courses: CourseGroup[] = await this.studentsService.getCourses(req);
+      const data = await this.studentsService.getCourses(req);
 
-      res.status(200).json({ data: courses, message: "Successfully retrieved all courses" });
+      res.status(200).json({ data, message: "Successfully retrieved all courses" });
     } catch (error) {
       next(error);
     }
