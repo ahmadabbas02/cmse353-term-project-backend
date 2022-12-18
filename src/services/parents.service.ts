@@ -1,26 +1,29 @@
+import { ChildAttendanceDto } from "@/dtos/parents.dto";
 import { HttpException } from "@/exceptions/HttpException";
-import { RequestWithSessionData } from "@/interfaces/auth.interface";
-import { prisma } from "@/utils/db";
 
-class StudentsService {
-  private courses = prisma.courseGroup;
+class ParentsService {
   private students = prisma.student;
+  private parents = prisma.parent;
   private attendanceRecords = prisma.attendanceRecord;
+  private courses = prisma.courseGroup;
 
-  public async getStudentById(studentId: string) {
-    const student = await this.students.findFirst({
-      where: {
-        id: studentId,
-      },
-    });
+  public async getParentFromUserId(userId: string) {
+    const parent = await this.parents.findFirst({ where: { userId } });
+    if (!parent) throw new HttpException(403, `Failed to find parent linked with user id: ${userId}`);
 
-    return student;
+    return parent;
   }
 
-  public async getCourses(req: RequestWithSessionData) {
-    const studentId = (await this.students.findFirst({ where: { userId: req.session.user.id } })).id;
-    if (!studentId) throw new HttpException(403, `Failed to find student linked with user id: ${req.session.user.id}`);
+  public async getChildren(parentId: string) {
+    const students = await this.students.findMany({
+      where: {
+        parentId,
+      },
+    });
+    return students;
+  }
 
+  public async getChildCourses(studentId: string) {
     const courses = await this.courses.findMany({
       where: {
         students: {
@@ -50,11 +53,10 @@ class StudentsService {
     return { courses, attendanceStatus };
   }
 
-  public async getAttendanceRecords(req: RequestWithSessionData, courseId: string) {
-    const studentId = (await this.students.findFirst({ where: { userId: req.session.user.id } })).id;
-    if (!studentId) throw new HttpException(403, `Failed to find student linked with user id: ${req.session.user.id}`);
+  public async getChildAttendanceRecord(data: ChildAttendanceDto) {
+    const { studentId, courseId } = data;
 
-    const records = this.attendanceRecords.findMany({
+    const records = await this.attendanceRecords.findMany({
       where: {
         courseGroupId: courseId,
         studentId,
@@ -63,9 +65,8 @@ class StudentsService {
         dateTime: "desc",
       },
     });
-
     return records;
   }
 }
 
-export default StudentsService;
+export default ParentsService;

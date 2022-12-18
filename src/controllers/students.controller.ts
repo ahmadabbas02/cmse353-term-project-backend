@@ -1,4 +1,4 @@
-import { AttendanceRecord, CourseGroup } from "@prisma/client";
+import { AttendanceRecord } from "@prisma/client";
 import { NextFunction, Response } from "express";
 
 import { RequestWithSessionData } from "@/interfaces/auth.interface";

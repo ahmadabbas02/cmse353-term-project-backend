@@ -37,3 +37,9 @@
 
 - [x] /courses
 - [x] /courses/:id
+
+## Parents (/parents)
+
+- [x] /children
+- [x] /child/:id
+- [x] /attendance
