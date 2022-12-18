@@ -19,9 +19,13 @@ class AdminRoutes implements Routes {
 
   private initializeRoutes() {
     // Routes related to user
+    // Get all users
     this.router.get(`${this.path}/users`, isLoggedIn, isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR), this.adminController.getUsers);
 
+    // Get user by id
     this.router.get(`${this.path}/users/:id`, isLoggedIn, isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR), this.adminController.getUserById);
+
+    // Update user by id
     this.router.put(
       `${this.path}/users/:id`,
       isLoggedIn,
@@ -29,11 +33,15 @@ class AdminRoutes implements Routes {
       validationMiddleware(CreateUserDto, "body", true),
       this.adminController.updateUser,
     );
+
+    // Delete user
     this.router.delete(`${this.path}/users/:id`, isLoggedIn, isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR), this.adminController.deleteUser);
 
     // Routes related to course
+    // Get all courses
     this.router.get(`${this.path}/courses`, isLoggedIn, isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR), this.adminController.getAllCourses);
 
+    // Add new course
     this.router.post(
       `${this.path}/courses/create`,
       isLoggedIn,
@@ -42,6 +50,7 @@ class AdminRoutes implements Routes {
       this.adminController.createCourse,
     );
 
+    // Add student to course
     this.router.post(
       `${this.path}/courses/addStudentToCourse`,
       isLoggedIn,
@@ -50,6 +59,7 @@ class AdminRoutes implements Routes {
       this.adminController.addStudentToCourse,
     );
 
+    // Remove student from course
     this.router.post(
       `${this.path}/courses/removeStudentFromCourse`,
       isLoggedIn,

@@ -1,21 +1,24 @@
 swagger: "2.0"
-info:
-  {
-    title: "Secure Attendance System API Docs",
-    version: "1.0",
-    description: "This was created as CMSE353 term project for EMU.",
-  }
+info: { title: "Secure Attendance System API Docs", version: "1.0", description: "This was created as CMSE353 term project for EMU." }
 tags:
+  - name: admin
+    description: Routes related to admin
   - name: auth
     description: Routes related to authentication
-  - name: courses
-    description: Routes related to courses operations
+  - name: chair
+    description: Routes related to chair
+  - name: parents
+    description: Routes related to parents
+  - name: students
+    description: Routes related to students
+  - name: teachers
+    description: Routes related to students
 
 paths:
   /auth/studentSignup:
     post:
       tags:
-        - auth
+        - admin
       summary: Add student to database
       parameters:
         - name: body
@@ -52,7 +55,7 @@ paths:
   /auth/parentSignup:
     post:
       tags:
-        - auth
+        - admin
       summary: "Add parent to database"
       parameters:
         - name: body
@@ -86,7 +89,7 @@ paths:
   /auth/teacherSignup:
     post:
       tags:
-        - auth
+        - admin
       summary: "Add teacher to database"
       parameters:
         - name: body
@@ -120,7 +123,7 @@ paths:
   /auth/chairSignup:
     post:
       tags:
-        - auth
+        - admin
       summary: "Add chair to database"
       parameters:
         - name: body
@@ -199,26 +202,53 @@ paths:
           description: "Conflict"
         500:
           description: "Server Error"
-  
-  /courses:
+
+  /auth/loggedIn:
+    post:
+      tags:
+        - auth
+      summary: Show logged in user info
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  email:
+                    type: string
+                  role:
+                    type: string
+              message:
+                type: string
+        "401":
+          description: "Failed to find session id(from cookies) in db"
+        "409":
+          description: "Failed to find user in session"
+
+  /admin/courses:
     get:
       tags:
-        - courses
+        - admin
       summary: Get all courses
       description: Returns all courses saved in database
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: OK
-          schema: 
+          schema:
             type: object
-            properties: 
+            properties:
               data:
                 type: array
                 items:
                   type: object
-                  properties: 
+                  properties:
                     id:
                       type: string
                       description: The course id
@@ -230,11 +260,11 @@ paths:
                       description: The id of the teacher teaching this course
               message:
                 type: string
-  
-  /courses/create:
+
+  /admin/courses/create:
     post:
       tags:
-        - courses
+        - admin
       summary: Create course
       description: Add a new course to database
       parameters:
@@ -258,14 +288,14 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: OK
-          schema: 
+          schema:
             type: object
-            properties: 
+            properties:
               data:
                 type: object
-                properties: 
+                properties:
                   id:
                     type: string
                     description: The course id
@@ -279,10 +309,10 @@ paths:
                 type: string
                 default: Created course successfully!
 
-  /courses/addStudentToCourse:
+  /admin/courses/addStudentToCourse:
     post:
       tags:
-        - courses
+        - admin
       summary: Add student to course
       description: Add the student to the specified course
       parameters:
@@ -305,14 +335,14 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: OK
-          schema: 
+          schema:
             type: object
-            properties: 
+            properties:
               data:
                 type: object
-                properties: 
+                properties:
                   id:
                     type: string
                     description: The course id
@@ -326,10 +356,10 @@ paths:
                 type: string
                 default: Added student successfully!
 
-  /courses/removeStudentFromCourse:
+  /admin/courses/removeStudentFromCourse:
     post:
       tags:
-        - courses
+        - admin
       summary: Remove student from course
       description: Remove the student from the specified course, this will delete the attendance records related to it as well.
       parameters:
@@ -352,16 +382,80 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: OK
-          schema: 
+          schema:
             type: object
-            properties: 
+            properties:
               message:
                 type: string
                 default: Removed student successfully!
 
+  /chair/students:
+    get:
+      tags:
+        - chair
+      description: "Get all students in the department"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    fullName:
+                      type: string
+                    department:
+                      type: string
+                    userId:
+                      type: string
+                    parentId:
+                      type: string
+              message:
+                type: string
 
+  /chair/students/{studentId}:
+    get:
+      tags:
+        - chair
+      description: "Get all students in the department"
+      parameters:
+        - in: path
+          name: studentId
+          type: string
+          required: true
+          description: "The ID of the student to get attendance records for"
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: fed82072-5bea-42df-af11-7b4917faeef4
+                    studentId:
+                      type: string
+                      example: student-1
+                    courseGroupId:
+                      type: string
+                      example: course-1
+                    dateTime:
+                      type: string
+                      example: 2022-12-01T08:30:00.000Z
+                    isPresent:
+                      type: boolean
 
 # definitions
 definitions:

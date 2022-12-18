@@ -22,14 +22,13 @@ class ChairService {
     const chair = await this.chairs.findFirst({ where: { userId } });
     if (!chair) throw new HttpException(403, `Failed to find chair linked with user id: ${userId}`);
 
-    const records = await this.attendanceRecords.groupBy({
+    const records = await this.attendanceRecords.findMany({
       where: {
         student: {
           department: chair.department,
           id: studentId,
         },
       },
-      by: ["dateTime"],
       orderBy: {
         dateTime: "desc",
       },
