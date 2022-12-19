@@ -4,14 +4,20 @@ import { CourseGroup } from "@prisma/client";
 import { AddStudentToCourseDto, CreateCourseDto } from "@/dtos/courses.dto";
 import { HttpException } from "@/exceptions/HttpException";
 import { prisma } from "@/utils/db";
+import TeachersService from "./teachers.service";
 
 class AdminService {
   private courses = prisma.courseGroup;
   private students = prisma.student;
   private attendanceRecords = prisma.attendanceRecord;
+  private teachersService = new TeachersService();
 
   public async getAllCourses() {
-    const courses = this.courses.findMany();
+    const courses = this.courses.findMany({
+      include: {
+        teacher: true,
+      },
+    });
 
     return courses;
   }
@@ -20,6 +26,10 @@ class AdminService {
     if (isEmpty(courseData)) throw new HttpException(400, "courseData is empty");
 
     const { name, teacherId } = courseData;
+
+    const teacher = await this.teachersService.getTeacherById(teacherId);
+
+    if (!teacher) throw new HttpException(409, `The teacher with ${teacherId} id does not exist.`);
 
     const findCourse: CourseGroup = await this.courses.findUnique({ where: { name: courseData.name } });
     if (findCourse) throw new HttpException(409, `This course ${courseData.name} already exists`);

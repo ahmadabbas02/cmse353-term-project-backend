@@ -9,6 +9,12 @@ class TeachersService {
   private teachers = prisma.teacher;
   private attendanceRecords = prisma.attendanceRecord;
 
+  public async getTeacherById(teacherId: string) {
+    const teacher = await this.teachers.findUnique({ where: { id: teacherId } });
+
+    return teacher;
+  }
+
   public async getCourses(userId: string) {
     const courses = await this.courses.findMany({
       where: {

@@ -28,7 +28,7 @@ class ParentsRoutes implements Routes {
       isLoggedIn,
       isSpecificRole(UserRole.PARENT),
       validationMiddleware(ChildAttendanceDto, "body"),
-      this.parentController.getChildCourses,
+      this.parentController.getAttendanceDetails,
     );
   }
 }

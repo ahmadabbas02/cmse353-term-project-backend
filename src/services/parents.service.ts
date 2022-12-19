@@ -34,6 +34,7 @@ class ParentsService {
       },
       include: {
         attendanceRecords: { where: { studentId } },
+        teacher: true,
       },
     });
 
