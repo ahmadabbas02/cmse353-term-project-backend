@@ -11,6 +11,14 @@ const load = async () => {
     console.log("Deleted teachers successfully!");
     await prisma.courseGroup.deleteMany();
     console.log("Deleted course groups successfully!");
+    await prisma.attendanceRecord.deleteMany();
+    console.log("Deleted attendanceRecords successfully!");
+    await prisma.chair.deleteMany();
+    console.log("Deleted chairs successfully!");
+    await prisma.session.deleteMany();
+    console.log("Deleted sessions successfully!");
+    await prisma.parent.deleteMany();
+    console.log("Deleted parents successfully!");
 
     await Promise.all(
       users.map(async user => {

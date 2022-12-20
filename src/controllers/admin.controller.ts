@@ -1,3 +1,4 @@
+import { changeSecretKey } from "@/config";
 import { AddStudentToCourseDto, CreateCourseDto } from "@/dtos/courses.dto";
 import { CreateUserDto } from "@/dtos/users.dto";
 import AdminService from "@/services/admin.service";
@@ -91,6 +92,16 @@ class AdminController {
       const createdCourse: CourseGroup = await this.coursesService.removeStudent(data);
 
       res.status(201).json({ data: createdCourse, message: "Removed student successfully!" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public resetKeys = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const users: User[] = await changeSecretKey();
+
+      res.status(201).json({ data: users, message: "Reset keys successfully!" });
     } catch (error) {
       next(error);
     }

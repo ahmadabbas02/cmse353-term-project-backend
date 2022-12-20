@@ -67,6 +67,8 @@ class AdminRoutes implements Routes {
       validationMiddleware(AddStudentToCourseDto, "body"),
       this.adminController.removeStudentFromCourse,
     );
+
+    this.router.post(`${this.path}/resetKeys`, isLoggedIn, isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR), this.adminController.resetKeys);
   }
 }
 
