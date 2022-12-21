@@ -1,11 +1,21 @@
 import { ChildAttendanceDto } from "@/dtos/parents.dto";
 import { HttpException } from "@/exceptions/HttpException";
 
-class ParentsService {
+class ParentService {
   private students = prisma.student;
   private parents = prisma.parent;
   private attendanceRecords = prisma.attendanceRecord;
   private courses = prisma.courseGroup;
+
+  public async getAllParents() {
+    const parents = await this.parents.findMany({
+      include: {
+        children: true,
+      },
+    });
+
+    return parents;
+  }
 
   public async getParentFromUserId(userId: string) {
     const parent = await this.parents.findFirst({ where: { userId } });
@@ -70,4 +80,4 @@ class ParentsService {
   }
 }
 
-export default ParentsService;
+export default ParentService;

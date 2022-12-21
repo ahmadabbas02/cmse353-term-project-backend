@@ -1,20 +1,68 @@
 import { changeSecretKey } from "@/config";
 import { AddStudentToCourseDto, CreateCourseDto } from "@/dtos/courses.dto";
 import { CreateUserDto } from "@/dtos/users.dto";
-import AdminService from "@/services/admin.service";
+import ChairService from "@/services/chair.service";
+import CourseService from "@/services/courses.service";
+import ParentService from "@/services/parent.service";
+import StudentService from "@/services/student.service";
+import TeacherService from "@/services/teacher.service";
 import UserService from "@/services/users.service";
 import { CourseGroup, User } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 
 class AdminController {
-  private coursesService = new AdminService();
-  public userService = new UserService();
+  private coursesService = new CourseService();
+  private userService = new UserService();
+  private studentService = new StudentService();
+  private teacherService = new TeacherService();
+  private parentService = new ParentService();
+  private chairService = new ChairService();
 
   public getUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const findAllUsersData: User[] = await this.userService.findAllUser();
 
       res.status(200).json({ data: findAllUsersData, message: "findAll" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getStudents = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const students = await this.studentService.getAllStudents();
+
+      res.status(200).json({ data: students, message: "students" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getTeachers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const teachers = await this.teacherService.getAllTeachers();
+
+      res.status(200).json({ data: teachers, message: "teachers" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getParents = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const parents = await this.parentService.getAllParents();
+
+      res.status(200).json({ data: parents, message: "parents" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getChairs = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const chairs = await this.chairService.getAllChairs();
+
+      res.status(200).json({ data: chairs, message: "chairs" });
     } catch (error) {
       next(error);
     }
@@ -78,7 +126,7 @@ class AdminController {
   public addStudentToCourse = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data: AddStudentToCourseDto = req.body;
-      const createdCourse: CourseGroup = await this.coursesService.addStudent(data);
+      const createdCourse: CourseGroup = await this.coursesService.addStudentToCourse(data);
 
       res.status(201).json({ data: createdCourse, message: "Added student successfully!" });
     } catch (error) {
@@ -89,7 +137,7 @@ class AdminController {
   public removeStudentFromCourse = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data: AddStudentToCourseDto = req.body;
-      const createdCourse: CourseGroup = await this.coursesService.removeStudent(data);
+      const createdCourse: CourseGroup = await this.coursesService.removeStudentFromCourse(data);
 
       res.status(201).json({ data: createdCourse, message: "Removed student successfully!" });
     } catch (error) {

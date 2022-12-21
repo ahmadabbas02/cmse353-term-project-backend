@@ -6,6 +6,17 @@ class ChairService {
   private chairs = prisma.chair;
   private attendanceRecords = prisma.attendanceRecord;
 
+  public async getAllChairs() {
+    const chairs = await this.chairs.findMany({
+      include: { user: true },
+    });
+
+    return chairs.map(chair => {
+      delete chair.user.password;
+      return chair;
+    });
+  }
+
   public async getDepartmentStudents(req: RequestWithSessionData) {
     const chair = await this.chairs.findFirst({ where: { userId: req.session.user.id } });
     if (!chair) throw new HttpException(403, `Failed to find chair linked with user id: ${req.session.user.id}`);

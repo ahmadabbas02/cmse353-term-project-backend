@@ -1,11 +1,11 @@
 import { AddAttendanceRecordDto, UpdateAttendanceRecordDto } from "@/dtos/courses.dto";
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
-import TeachersService from "@/services/teachers.service";
+import TeacherService from "@/services/teacher.service";
 import { CourseGroup } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 
 class TeachersController {
-  private teachersSerivce = new TeachersService();
+  private teachersSerivce = new TeacherService();
 
   public getCourses = async (req: RequestWithSessionData, res: Response, next: NextFunction) => {
     try {

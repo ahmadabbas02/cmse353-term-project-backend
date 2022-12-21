@@ -2,10 +2,10 @@ import { AttendanceRecord } from "@prisma/client";
 import { NextFunction, Response } from "express";
 
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
-import StudentsService from "@/services/students.service";
+import StudentService from "@/services/student.service";
 
 class StudentsController {
-  private studentsService = new StudentsService();
+  private studentsService = new StudentService();
 
   public getCourses = async (req: RequestWithSessionData, res: Response, next: NextFunction) => {
     try {

@@ -3,11 +3,24 @@ import { HttpException } from "@/exceptions/HttpException";
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
 import { prisma } from "@/utils/db";
 
-class TeachersService {
+class TeacherService {
   private courses = prisma.courseGroup;
   private students = prisma.student;
   private teachers = prisma.teacher;
   private attendanceRecords = prisma.attendanceRecord;
+
+  public async getAllTeachers() {
+    const teachers = await this.teachers.findMany({
+      include: {
+        user: true,
+      },
+    });
+
+    return teachers.map(teacher => {
+      delete teacher.user.password;
+      return teacher;
+    });
+  }
 
   public async getTeacherById(teacherId: string) {
     const teacher = await this.teachers.findUnique({ where: { id: teacherId } });
@@ -113,4 +126,4 @@ class TeachersService {
   }
 }
 
-export default TeachersService;
+export default TeacherService;

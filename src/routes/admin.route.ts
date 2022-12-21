@@ -37,6 +37,12 @@ class AdminRoutes implements Routes {
     // Delete user
     this.router.delete(`${this.path}/users/:id`, isLoggedIn, isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR), this.adminController.deleteUser);
 
+    // TODO: Add specific id routes(if needed)
+    this.router.get(`${this.path}/students`, isLoggedIn, isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR), this.adminController.getStudents);
+    this.router.get(`${this.path}/teachers`, isLoggedIn, isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR), this.adminController.getTeachers);
+    this.router.get(`${this.path}/parents`, isLoggedIn, isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR), this.adminController.getParents);
+    this.router.get(`${this.path}/chairs`, isLoggedIn, isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR), this.adminController.getChairs);
+
     // Routes related to course
     // Get all courses
     this.router.get(`${this.path}/courses`, isLoggedIn, isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR), this.adminController.getAllCourses);

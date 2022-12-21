@@ -1,13 +1,13 @@
 import { ChildAttendanceDto } from "@/dtos/parents.dto";
 import { HttpException } from "@/exceptions/HttpException";
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
-import ParentsService from "@/services/parents.service";
-import StudentsService from "@/services/students.service";
+import ParentService from "@/services/parent.service";
+import StudentService from "@/services/student.service";
 import { NextFunction, Response } from "express";
 
 class ParentsController {
-  private parentsService = new ParentsService();
-  private studentService = new StudentsService();
+  private parentsService = new ParentService();
+  private studentService = new StudentService();
 
   public getChildren = async (req: RequestWithSessionData, res: Response, next: NextFunction): Promise<void> => {
     try {

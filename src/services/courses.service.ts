@@ -1,33 +1,33 @@
-import { isEmpty } from "class-validator";
-import { CourseGroup } from "@prisma/client";
-
+import { prisma } from "@/utils/db";
+import { isEmpty } from "@/utils/util";
+import TeacherService from "./teacher.service";
 import { AddStudentToCourseDto, CreateCourseDto } from "@/dtos/courses.dto";
 import { HttpException } from "@/exceptions/HttpException";
-import { prisma } from "@/utils/db";
-import TeacherService from "./teacher.service";
+import { CourseGroup } from "@prisma/client";
+import StudentService from "./student.service";
 
-class AdminService {
+class CourseService {
   private courses = prisma.courseGroup;
-  private students = prisma.student;
-  private attendanceRecords = prisma.attendanceRecord;
-  private teachersService = new TeacherService();
+  private teacherService = new TeacherService();
+  private studentService = new StudentService();
 
-  public async getAllCourses() {
+  public async getAllCourses(includeTeacherDetails = true) {
     const courses = this.courses.findMany({
       include: {
-        teacher: true,
+        teacher: includeTeacherDetails,
       },
     });
 
     return courses;
   }
 
-  public async createCourse(courseData: CreateCourseDto) {
+  public async createCourse(courseData: CreateCourseDto): Promise<CourseGroup> {
     if (isEmpty(courseData)) throw new HttpException(400, "courseData is empty");
 
     const { name, teacherId } = courseData;
 
-    const teacher = await this.teachersService.getTeacherById(teacherId);
+    const teacher = await this.teacherService.getTeacherById(teacherId);
+
     if (!teacher) throw new HttpException(409, `The teacher with ${teacherId} id does not exist.`);
 
     const findCourse: CourseGroup = await this.courses.findUnique({ where: { name: courseData.name } });
@@ -43,16 +43,8 @@ class AdminService {
     return createdCourse;
   }
 
-  public async addStudent(studentData: AddStudentToCourseDto) {
-    const studentsInCourse = await this.students.findMany({
-      where: {
-        courses: {
-          some: {
-            id: studentData.courseId,
-          },
-        },
-      },
-    });
+  public async addStudentToCourse(studentData: AddStudentToCourseDto): Promise<CourseGroup> {
+    const studentsInCourse = await this.studentService.getStudentsInCourse(studentData.courseId);
     studentsInCourse.forEach(student => {
       delete student.fullName;
       delete student.userId;
@@ -66,7 +58,7 @@ class AdminService {
       throw new HttpException(409, `The course ${studentData.courseId} already contains student ${studentData.studentId}`);
     }
 
-    const student = await this.students.findFirst({ where: { id: studentData.studentId } });
+    const student = await this.studentService.getStudentById(studentData.studentId);
     delete student.userId;
     delete student.fullName;
     delete student.parentId;
@@ -86,16 +78,8 @@ class AdminService {
     return updatedCourse;
   }
 
-  public async removeStudent(studentData: AddStudentToCourseDto) {
-    const studentsInCourse = await this.students.findMany({
-      where: {
-        courses: {
-          some: {
-            id: studentData.courseId,
-          },
-        },
-      },
-    });
+  public async removeStudentFromCourse(studentData: AddStudentToCourseDto) {
+    const studentsInCourse = await this.studentService.getStudentsInCourse(studentData.courseId);
     studentsInCourse.forEach(student => {
       delete student.fullName;
       delete student.userId;
@@ -109,17 +93,16 @@ class AdminService {
       throw new HttpException(409, `The course does not contain the student`);
     }
 
+    // TODO: Check if we actually need this
     // Delete attendance records related to the course
-    const deletedRecords = await this.attendanceRecords.deleteMany({
-      where: {
-        studentId: studentData.studentId,
-        courseGroupId: studentData.courseId,
-      },
-    });
-    console.log("🚀 ~ file: courses.service.ts:115 ~ CoursesService ~ removeStudent ~ deletedRecords", deletedRecords);
+    // const deletedRecords = await this.attendanceRecords.deleteMany({
+    //   where: {
+    //     studentId: studentData.studentId,
+    //     courseGroupId: studentData.courseId,
+    //   },
+    // });
 
     const filteredStudents = studentsInCourse.filter(student => student.id !== studentData.studentId);
-    console.log("🚀 ~ file: courses.service.ts ~ line 103 ~ CoursesService ~ removeStudent ~ filteredStudents", filteredStudents);
 
     const updatedCourse = await this.courses.update({
       where: { id: studentData.courseId },
@@ -130,4 +113,4 @@ class AdminService {
   }
 }
 
-export default AdminService;
+export default CourseService;

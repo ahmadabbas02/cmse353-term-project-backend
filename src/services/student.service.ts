@@ -1,11 +1,26 @@
 import { HttpException } from "@/exceptions/HttpException";
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
 import { prisma } from "@/utils/db";
+import { excludeFromUsers } from "@/utils/util";
+import { Student } from "@prisma/client";
 
-class StudentsService {
+class StudentService {
   private courses = prisma.courseGroup;
   private students = prisma.student;
   private attendanceRecords = prisma.attendanceRecord;
+
+  public async getAllStudents() {
+    const students = await this.students.findMany({
+      include: {
+        user: true,
+      },
+    });
+
+    return students.map(student => {
+      delete student.user.password;
+      return student;
+    });
+  }
 
   public async getStudentById(studentId: string) {
     const student = await this.students.findFirst({
@@ -15,6 +30,19 @@ class StudentsService {
     });
 
     return student;
+  }
+
+  public async getStudentsInCourse(courseId: string): Promise<Student[]> {
+    const studentsInCourse = await this.students.findMany({
+      where: {
+        courses: {
+          some: {
+            id: courseId,
+          },
+        },
+      },
+    });
+    return studentsInCourse;
   }
 
   public async getCourses(req: RequestWithSessionData) {
@@ -69,4 +97,4 @@ class StudentsService {
   }
 }
 
-export default StudentsService;
+export default StudentService;
