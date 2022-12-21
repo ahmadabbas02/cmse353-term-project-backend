@@ -1,10 +1,7 @@
-import { HttpException } from "@/exceptions/HttpException";
-import { RequestWithSessionData } from "@/interfaces/auth.interface";
+import { prisma } from "@utils/db";
 
 class ChairService {
-  private students = prisma.student;
   private chairs = prisma.chair;
-  private attendanceRecords = prisma.attendanceRecord;
 
   public async getAllChairs() {
     const chairs = await this.chairs.findMany({
@@ -17,35 +14,10 @@ class ChairService {
     });
   }
 
-  public async getDepartmentStudents(req: RequestWithSessionData) {
-    const chair = await this.chairs.findFirst({ where: { userId: req.session.user.id } });
-    if (!chair) throw new HttpException(403, `Failed to find chair linked with user id: ${req.session.user.id}`);
-
-    const students = await this.students.findMany({
-      where: {
-        department: chair.department,
-      },
-    });
-    return students;
-  }
-
-  public async getStudentAttendanceRecord(userId: string, studentId: string) {
+  public async getChairByUserId(userId: string) {
     const chair = await this.chairs.findFirst({ where: { userId } });
-    if (!chair) throw new HttpException(403, `Failed to find chair linked with user id: ${userId}`);
 
-    const records = await this.attendanceRecords.findMany({
-      where: {
-        student: {
-          department: chair.department,
-          id: studentId,
-        },
-      },
-      orderBy: {
-        dateTime: "desc",
-      },
-    });
-
-    return records;
+    return chair;
   }
 }
 

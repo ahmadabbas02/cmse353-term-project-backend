@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { User } from "@prisma/client";
 import { CreateUserDto } from "@dtos/users.dto";
-import UserService from "@services/users.service";
+import UserService from "@/services/user.service";
 
-class UsersController {
+class UserController {
   public userService = new UserService();
 
   public getUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -51,4 +51,4 @@ class UsersController {
   };
 }
 
-export default UsersController;
+export default UserController;

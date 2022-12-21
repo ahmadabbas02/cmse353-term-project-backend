@@ -5,12 +5,12 @@ import validationMiddleware from "@middlewares/validation.middleware";
 import { isLoggedIn, isSpecificRole } from "@/middlewares/auth.middleware";
 import { UserRole } from "@/utils/consts";
 import { AddAttendanceRecordDto, UpdateAttendanceRecordDto } from "@/dtos/courses.dto";
-import TeachersController from "@/controllers/teachers.controller";
+import TeacherController from "@/controllers/teacher.controller";
 
 class TeachersRoutes implements Routes {
   public path = "/teachers";
   public router = Router();
-  public teachersController = new TeachersController();
+  public teachersController = new TeacherController();
 
   constructor() {
     this.initializeRoutes();

@@ -21,6 +21,52 @@ class CourseService {
     return courses;
   }
 
+  public async getCourseById(courseId: string) {
+    const course = await this.courses.findUnique({ where: { id: courseId } });
+    return course;
+  }
+
+  public async getStudentCourses(studentId: string) {
+    const courses = await this.courses.findMany({
+      where: {
+        students: {
+          some: {
+            id: studentId,
+          },
+        },
+      },
+      include: {
+        attendanceRecords: { where: { studentId } },
+        teacher: true,
+      },
+    });
+
+    const attendanceStatus: {
+      courseId: string;
+      presentDays: number;
+      totalDays: number;
+    }[] = [];
+    courses.map(course => {
+      attendanceStatus.push({
+        courseId: course.id,
+        presentDays: course.attendanceRecords.filter(record => record.isPresent).length,
+        totalDays: course.attendanceRecords.length,
+      });
+    });
+
+    return { courses, attendanceStatus };
+  }
+
+  public async getTeacherCourses(teacherId: string) {
+    const courses = await this.courses.findMany({
+      where: {
+        teacherId,
+      },
+    });
+
+    return courses;
+  }
+
   public async createCourse(courseData: CreateCourseDto): Promise<CourseGroup> {
     if (isEmpty(courseData)) throw new HttpException(400, "courseData is empty");
 

@@ -1,4 +1,4 @@
-import StudentsController from "@/controllers/students.controller";
+import StudentController from "@/controllers/student.controller";
 import { Routes } from "@/interfaces/routes.interface";
 import { isLoggedIn, isSpecificRole } from "@/middlewares/auth.middleware";
 import { UserRole } from "@/utils/consts";
@@ -7,7 +7,7 @@ import { Router } from "express";
 class StudentsRoute implements Routes {
   public path = "/students";
   public router = Router();
-  private studentController = new StudentsController();
+  private studentController = new StudentController();
 
   constructor() {
     this.initializeRoutes();

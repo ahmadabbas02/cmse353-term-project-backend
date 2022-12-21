@@ -1,20 +1,26 @@
 import { ChildAttendanceDto } from "@/dtos/parents.dto";
 import { HttpException } from "@/exceptions/HttpException";
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
+import AttendanceService from "@/services/attendance.service";
+import CourseService from "@/services/course.service";
 import ParentService from "@/services/parent.service";
 import StudentService from "@/services/student.service";
 import { NextFunction, Response } from "express";
 
-class ParentsController {
+class ParentController {
   private parentsService = new ParentService();
   private studentService = new StudentService();
+  private courseService = new CourseService();
+  private attendanceService = new AttendanceService();
 
   public getChildren = async (req: RequestWithSessionData, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const parentId = (await this.parentsService.getParentFromUserId(req.session.user.id)).id;
+      const userId = req.session.user.id;
 
-      const childrenStudents = await this.parentsService.getChildren(parentId);
+      const parent = await this.parentsService.getParentFromUserId(userId);
+      if (!parent) throw new HttpException(403, `Failed to find parent linked with user id: ${req.session.user.id}`);
 
+      const childrenStudents = await this.studentService.getChildrenStudents(parent.id);
       res.status(200).json({ data: childrenStudents, message: "childrenStudents" });
     } catch (error) {
       next(error);
@@ -25,12 +31,14 @@ class ParentsController {
     try {
       const studentId = req.params.id;
 
-      const parentId = (await this.parentsService.getParentFromUserId(req.session.user.id)).id;
+      const userId = req.session.user.id;
+      const parent = await this.parentsService.getParentFromUserId(userId);
+      if (!parent) throw new HttpException(403, `Failed to find parent linked with user id: ${req.session.user.id}`);
 
-      const isChild = (await this.studentService.getStudentById(studentId)).parentId === parentId;
+      const isChild = (await this.studentService.getStudentById(studentId)).parentId === parent.id;
       if (!isChild) throw new HttpException(401, `You can't check the courses of anyone other than your children.`);
 
-      const records = await this.parentsService.getChildCourses(studentId);
+      const records = await this.courseService.getStudentCourses(studentId);
 
       res.status(200).json({ data: records, message: "childCourses" });
     } catch (error) {
@@ -40,8 +48,14 @@ class ParentsController {
 
   public getAttendanceDetails = async (req: RequestWithSessionData, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const userId = req.session.user.id;
+
+      const parent = await this.parentsService.getParentFromUserId(userId);
+      if (!parent) throw new HttpException(403, `Failed to find parent linked with user id: ${req.session.user.id}`);
+
       const data: ChildAttendanceDto = req.body;
-      const records = await this.parentsService.getChildAttendanceRecord(data);
+
+      const records = await this.attendanceService.getStudentCourseAttendanceRecords(data);
 
       res.status(200).json({ data: records, message: "childAttendanceDetails" });
     } catch (error) {
@@ -50,4 +64,4 @@ class ParentsController {
   };
 }
 
-export default ParentsController;
+export default ParentController;

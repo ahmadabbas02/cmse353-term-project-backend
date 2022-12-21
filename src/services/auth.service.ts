@@ -4,6 +4,7 @@ import { HttpException } from "@exceptions/HttpException";
 import { isEmpty } from "@utils/util";
 import { UserRole } from "@utils/consts";
 import { prisma } from "@utils/db";
+import UserService from "./user.service";
 
 class AuthService {
   private users = prisma.user;
@@ -11,11 +12,12 @@ class AuthService {
   private parents = prisma.parent;
   private teachers = prisma.teacher;
   private chairs = prisma.chair;
+  private userService = new UserService();
 
   public async registerStudent(studentData: CreateUserDto): Promise<Student> {
     if (isEmpty(studentData)) throw new HttpException(400, "studentData is empty");
 
-    const findUser: User = await this.users.findUnique({ where: { email: studentData.email } });
+    const findUser: User = await this.userService.findUserByEmail(studentData.email);
     if (findUser) throw new HttpException(409, `This email ${studentData.email} already exists`);
 
     const { email, password, fullName } = studentData;
@@ -35,7 +37,7 @@ class AuthService {
   public async registerParent(parentData: ParentUserDto) {
     if (isEmpty(parentData)) throw new HttpException(400, "parentData is empty");
 
-    const findUser: User = await this.users.findUnique({ where: { email: parentData.email } });
+    const findUser: User = await this.userService.findUserByEmail(parentData.email);
     if (findUser) throw new HttpException(409, `This email ${parentData.email} already exists`);
 
     const { email, password, fullName, studentIds } = parentData;
@@ -66,7 +68,7 @@ class AuthService {
   public async registerTeacher(teacherData: CreateUserDto): Promise<Teacher> {
     if (isEmpty(teacherData)) throw new HttpException(400, "teacherData is empty");
 
-    const findUser: User = await this.users.findUnique({ where: { email: teacherData.email } });
+    const findUser: User = await this.userService.findUserByEmail(teacherData.email);
     if (findUser) throw new HttpException(409, `This email ${teacherData.email} already exists`);
 
     const { email, password, fullName } = teacherData;
@@ -86,7 +88,7 @@ class AuthService {
   public async registerChair(chairData: ChairUserDto): Promise<Chair> {
     if (isEmpty(chairData)) throw new HttpException(400, "chairData is empty");
 
-    const findUser: User = await this.users.findUnique({ where: { email: chairData.email } });
+    const findUser: User = await this.userService.findUserByEmail(chairData.email);
     if (findUser) throw new HttpException(409, `This email ${chairData.email} already exists`);
 
     const { fullName, email, password, department } = chairData;
@@ -111,7 +113,7 @@ class AuthService {
   public async registerAdministrator(administratorData: CreateUserDto): Promise<User> {
     if (isEmpty(administratorData)) throw new HttpException(400, "administratorData is empty");
 
-    const findUser: User = await this.users.findUnique({ where: { email: administratorData.email } });
+    const findUser: User = await this.userService.findUserByEmail(administratorData.email);
     if (findUser) throw new HttpException(409, `This email ${administratorData.email} already exists`);
 
     const { email, password } = administratorData;

@@ -1,4 +1,4 @@
-import ParentsController from "@/controllers/parents.controller";
+import ParentController from "@/controllers/parent.controller";
 import { ChildAttendanceDto } from "@/dtos/parents.dto";
 import { Routes } from "@/interfaces/routes.interface";
 import { isLoggedIn, isSpecificRole } from "@/middlewares/auth.middleware";
@@ -9,7 +9,7 @@ import { Router } from "express";
 class ParentsRoutes implements Routes {
   public path = "/parents";
   public router = Router();
-  private parentController = new ParentsController();
+  private parentController = new ParentController();
 
   constructor() {
     this.initializeRoutes();

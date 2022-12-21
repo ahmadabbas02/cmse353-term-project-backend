@@ -1,5 +1,6 @@
 import { HttpException } from "@/exceptions/HttpException";
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
+import { Department } from "@/utils/consts";
 import { prisma } from "@/utils/db";
 import { excludeFromUsers } from "@/utils/util";
 import { Student } from "@prisma/client";
@@ -22,10 +23,34 @@ class StudentService {
     });
   }
 
+  public async getAllDepartmentStudents(department: Department) {
+    const students = await this.students.findMany({ where: { department } });
+    return students;
+  }
+
+  public async getChildrenStudents(parentId: string) {
+    const students = await this.students.findMany({
+      where: {
+        parentId,
+      },
+    });
+    return students;
+  }
+
   public async getStudentById(studentId: string) {
     const student = await this.students.findFirst({
       where: {
         id: studentId,
+      },
+    });
+
+    return student;
+  }
+
+  public async getStudentByUserId(userId: string) {
+    const student = await this.students.findFirst({
+      where: {
+        userId,
       },
     });
 

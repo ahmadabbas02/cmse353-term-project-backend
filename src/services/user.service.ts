@@ -8,7 +8,7 @@ class UserService {
   private users = prisma.user;
 
   public async findAllUser(): Promise<User[]> {
-    const allUser: User[] = await this.users.findMany({
+    const allUser = await this.users.findMany({
       include: {
         student: true,
         parent: true,
@@ -33,6 +33,22 @@ class UserService {
       },
     });
     if (!findUser) throw new HttpException(409, "User doesn't exist");
+
+    return excludeFromUser(findUser, "password");
+  }
+
+  public async findUserByEmail(email: string): Promise<User> {
+    if (isEmpty(email)) throw new HttpException(400, "email is empty");
+
+    const findUser: User = await this.users.findUnique({
+      where: { email },
+      include: {
+        student: true,
+        parent: true,
+        teacher: true,
+        chair: true,
+      },
+    });
 
     return excludeFromUser(findUser, "password");
   }
