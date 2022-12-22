@@ -25,12 +25,14 @@ class AttendanceService {
           attendanceData: [{ courseGroupId, id, isPresent, studentId }],
         });
       } else {
-        groupedRecords.forEach(element => {
-          if (element.dateTime === dateTime) {
+        for (let index = 0; index < groupedRecords.length; index++) {
+          const element = groupedRecords[index];
+          if (element.dateTime.toString() === dateTime.toString()) {
             element.attendanceData.push({ id, studentId, courseGroupId, isPresent });
             foundDateTime = true;
+            break;
           }
-        });
+        }
         if (!foundDateTime) {
           groupedRecords.push({
             dateTime,
