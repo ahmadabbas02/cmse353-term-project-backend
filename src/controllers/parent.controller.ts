@@ -1,4 +1,4 @@
-import { ChildAttendanceDto } from "@/dtos/parents.dto";
+import { AttendanceDto } from "@/dtos/parents.dto";
 import { HttpException } from "@/exceptions/HttpException";
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
 import AttendanceService from "@/services/attendance.service";
@@ -53,7 +53,7 @@ class ParentController {
       const parent = await this.parentsService.getParentFromUserId(userId);
       if (!parent) throw new HttpException(403, `Failed to find parent linked with user id: ${req.session.user.id}`);
 
-      const data: ChildAttendanceDto = req.body;
+      const data: AttendanceDto = req.body;
 
       const records = await this.attendanceService.getStudentCourseAttendanceRecords(data);
 

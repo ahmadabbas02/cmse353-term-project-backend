@@ -1,6 +1,6 @@
 import { IsString } from "class-validator";
 
-export class ChildAttendanceDto {
+export class AttendanceDto {
   @IsString()
   public studentId: string;
 

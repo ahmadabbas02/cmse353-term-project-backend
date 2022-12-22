@@ -1,5 +1,5 @@
 import ParentController from "@/controllers/parent.controller";
-import { ChildAttendanceDto } from "@/dtos/parents.dto";
+import { AttendanceDto } from "@/dtos/parents.dto";
 import { Routes } from "@/interfaces/routes.interface";
 import { isLoggedIn, isSpecificRole } from "@/middlewares/auth.middleware";
 import validationMiddleware from "@/middlewares/validation.middleware";
@@ -27,7 +27,7 @@ class ParentsRoutes implements Routes {
       `${this.path}/attendance`,
       isLoggedIn,
       isSpecificRole(UserRole.PARENT),
-      validationMiddleware(ChildAttendanceDto, "body"),
+      validationMiddleware(AttendanceDto, "body"),
       this.parentController.getAttendanceDetails,
     );
   }

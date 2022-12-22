@@ -4,6 +4,8 @@ import { prisma } from "@utils/db";
 import StudentService from "./student.service";
 import { HttpException } from "@/exceptions/HttpException";
 import CourseService from "./course.service";
+import { stringify } from "querystring";
+import { Transform } from "class-transformer";
 
 class AttendanceService {
   private studentService = new StudentService();
@@ -44,11 +46,29 @@ class AttendanceService {
       },
     });
 
-    return records;
+    const records2 = await this.attendanceRecords.groupBy({
+      by: ["dateTime"],
+      where: {
+        student: {
+          department,
+          id: studentId,
+        },
+      },
+      orderBy: {
+        dateTime: "desc",
+      },
+    });
+
+    return records2;
   }
 
   public async getStudentCourseAttendanceRecords(data: { studentId: string; courseId: string }) {
     const { studentId, courseId } = data;
+
+    const groupedRecords: {
+      dateTime: Date;
+      attendanceData: { id: string; studentId: string; courseGroupId: string; isPresent: boolean }[];
+    }[] = [];
 
     const records = await this.attendanceRecords.findMany({
       where: {
@@ -59,7 +79,34 @@ class AttendanceService {
         dateTime: "desc",
       },
     });
-    return records;
+
+    // Grouping by datetime functionality
+    records.forEach(record => {
+      let foundDateTime = false;
+      const { courseGroupId, dateTime, id, isPresent, studentId } = record;
+
+      if (groupedRecords.length === 0) {
+        groupedRecords.push({
+          dateTime,
+          attendanceData: [{ courseGroupId, id, isPresent, studentId }],
+        });
+      } else {
+        groupedRecords.forEach(element => {
+          if (element.dateTime === dateTime) {
+            element.attendanceData.push({ id, studentId, courseGroupId, isPresent });
+            foundDateTime = true;
+          }
+        });
+        if (!foundDateTime) {
+          groupedRecords.push({
+            dateTime,
+            attendanceData: [{ courseGroupId, id, isPresent, studentId }],
+          });
+          foundDateTime = true;
+        }
+      }
+    });
+    return groupedRecords;
   }
 
   public async addAttendanceRecords(attendanceData: AddAttendanceRecordDto) {

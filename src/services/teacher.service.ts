@@ -1,6 +1,4 @@
-import { AddAttendanceRecordDto, UpdateAttendanceRecordDto } from "@/dtos/courses.dto";
 import { HttpException } from "@/exceptions/HttpException";
-import { RequestWithSessionData } from "@/interfaces/auth.interface";
 import { prisma } from "@/utils/db";
 
 class TeacherService {
