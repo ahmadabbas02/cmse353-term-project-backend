@@ -1,8 +1,6 @@
 import StudentController from "@/controllers/student.controller";
-import { AttendanceDto } from "@/dtos/parents.dto";
 import { Routes } from "@/interfaces/routes.interface";
 import { isLoggedIn, isSpecificRole } from "@/middlewares/auth.middleware";
-import validationMiddleware from "@/middlewares/validation.middleware";
 import { UserRole } from "@/utils/consts";
 import { Router } from "express";
 

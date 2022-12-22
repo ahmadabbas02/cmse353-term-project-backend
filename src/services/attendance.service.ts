@@ -1,86 +1,20 @@
 import { AddAttendanceRecordDto, UpdateAttendanceRecordDto } from "@/dtos/courses.dto";
-import { Department } from "@/utils/consts";
 import { prisma } from "@utils/db";
 import StudentService from "./student.service";
 import { HttpException } from "@/exceptions/HttpException";
 import CourseService from "./course.service";
-import { stringify } from "querystring";
-import { Transform } from "class-transformer";
+import { AttendanceRecord } from "@prisma/client";
 
 class AttendanceService {
   private studentService = new StudentService();
   private courseService = new CourseService();
   private attendanceRecords = prisma.attendanceRecord;
 
-  public async getAttendanceRecordById(recordId: string) {
-    const record = this.attendanceRecords.findUnique({ where: { id: recordId } });
-    return record;
-  }
-
-  public async getCourseAttendanceRecords(courseId: string, teacherId: string) {
-    const course = await this.courseService.getCourseById(courseId);
-    if (!course || course.teacherId !== teacherId) throw new HttpException(403, `You aren't a teacher of this course.`);
-
-    const records = this.attendanceRecords.findMany({
-      where: {
-        courseGroupId: courseId,
-      },
-      orderBy: {
-        dateTime: "desc",
-      },
-    });
-
-    return records;
-  }
-
-  public async getStudentAttendanceRecords(studentId: string, department: Department) {
-    const records = await this.attendanceRecords.findMany({
-      where: {
-        student: {
-          department,
-          id: studentId,
-        },
-      },
-      orderBy: {
-        dateTime: "desc",
-      },
-    });
-
-    const records2 = await this.attendanceRecords.groupBy({
-      by: ["dateTime"],
-      where: {
-        student: {
-          department,
-          id: studentId,
-        },
-      },
-      orderBy: {
-        dateTime: "desc",
-      },
-    });
-
-    return records2;
-  }
-
-  public async getStudentCourseAttendanceRecords(data: { studentId: string; courseId: string }) {
-    const { studentId, courseId } = data;
-
+  private groupAttendanceRecords(records: AttendanceRecord[]) {
     const groupedRecords: {
       dateTime: Date;
       attendanceData: { id: string; studentId: string; courseGroupId: string; isPresent: boolean }[];
     }[] = [];
-
-    const records = await this.attendanceRecords.findMany({
-      where: {
-        courseGroupId: courseId,
-        studentId,
-      },
-      orderBy: {
-        dateTime: "desc",
-      },
-    });
-
-    // Grouping by datetime functionality
     records.forEach(record => {
       let foundDateTime = false;
       const { courseGroupId, dateTime, id, isPresent, studentId } = record;
@@ -106,7 +40,45 @@ class AttendanceService {
         }
       }
     });
+
     return groupedRecords;
+  }
+
+  public async getAttendanceRecordById(recordId: string) {
+    const record = this.attendanceRecords.findUnique({ where: { id: recordId } });
+    return record;
+  }
+
+  public async getCourseAttendanceRecords(courseId: string, teacherId: string) {
+    const course = await this.courseService.getCourseById(courseId);
+    if (!course || course.teacherId !== teacherId) throw new HttpException(403, `You aren't a teacher of this course.`);
+
+    const records = await this.attendanceRecords.findMany({
+      where: {
+        courseGroupId: courseId,
+      },
+      orderBy: {
+        dateTime: "desc",
+      },
+    });
+
+    return this.groupAttendanceRecords(records);
+  }
+
+  public async getStudentCourseAttendanceRecords(data: { studentId: string; courseId: string }) {
+    const { studentId, courseId } = data;
+
+    const records = await this.attendanceRecords.findMany({
+      where: {
+        courseGroupId: courseId,
+        studentId,
+      },
+      orderBy: {
+        dateTime: "desc",
+      },
+    });
+
+    return this.groupAttendanceRecords(records);
   }
 
   public async addAttendanceRecords(attendanceData: AddAttendanceRecordDto) {
