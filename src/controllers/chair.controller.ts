@@ -48,13 +48,19 @@ class ChairController {
 
   public getStudentAttendanceRecords = async (req: RequestWithSessionData, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const attendanceData: AttendanceDto = req.body;
+      const { studentId, courseId } = req.query;
+      if (!studentId) throw new HttpException(400, `Missing query 'studentId'`);
+      if (!courseId) throw new HttpException(400, `Missing query 'courseId'`);
+
       const userId = req.session.user.id;
 
       const chair = await this.chairService.getChairByUserId(userId);
       if (!chair) throw new HttpException(403, `Failed to find chair linked with user id: ${req.session.user.id}`);
 
-      const records = await this.attendanceService.getStudentCourseAttendanceRecords(attendanceData);
+      const records = await this.attendanceService.getStudentCourseAttendanceRecords({
+        courseId: courseId.toString(),
+        studentId: studentId.toString(),
+      });
       res.status(200).json({ data: records, message: "attendanceRecords" });
     } catch (error) {
       next(error);
