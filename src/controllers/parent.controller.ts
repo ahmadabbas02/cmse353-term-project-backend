@@ -1,4 +1,3 @@
-import { AttendanceDto } from "@/dtos/parents.dto";
 import { HttpException } from "@/exceptions/HttpException";
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
 import AttendanceService from "@/services/attendance.service";
@@ -48,14 +47,20 @@ class ParentController {
 
   public getAttendanceDetails = async (req: RequestWithSessionData, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const studentId = req.query.studentId as string;
+      const courseId = req.query.courseId as string;
+      if (!studentId) throw new HttpException(400, `Missing query 'studentId'`);
+      if (!courseId) throw new HttpException(400, `Missing query 'courseId'`);
+
       const userId = req.session.user.id;
 
       const parent = await this.parentsService.getParentFromUserId(userId);
       if (!parent) throw new HttpException(403, `Failed to find parent linked with user id: ${req.session.user.id}`);
 
-      const data: AttendanceDto = req.body;
-
-      const records = await this.attendanceService.getStudentCourseAttendanceRecords(data);
+      const records = await this.attendanceService.getStudentCourseAttendanceRecords({
+        courseId,
+        studentId,
+      });
 
       res.status(200).json({ data: records, message: "childAttendanceDetails" });
     } catch (error) {
