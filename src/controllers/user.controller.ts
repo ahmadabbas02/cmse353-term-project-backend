@@ -4,7 +4,7 @@ import { CreateUserDto } from "@dtos/users.dto";
 import UserService from "@/services/user.service";
 
 class UserController {
-  public userService = new UserService();
+  public userService = UserService.getInstance();
 
   public getUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {

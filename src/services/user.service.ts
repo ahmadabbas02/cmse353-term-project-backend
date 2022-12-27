@@ -5,6 +5,14 @@ import { excludeFromUser, excludeFromUsers, isEmpty } from "@utils/util";
 import { prisma } from "@/utils/db";
 
 class UserService {
+  static instance: UserService;
+  public static getInstance(): UserService {
+    if (!UserService.instance) {
+      UserService.instance = new UserService();
+    }
+    return UserService.instance;
+  }
+
   private users = prisma.user;
 
   public async findAllUser(): Promise<User[]> {

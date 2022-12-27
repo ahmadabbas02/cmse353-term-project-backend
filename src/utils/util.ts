@@ -20,6 +20,7 @@ export const isEmpty = (value: string | number | object): boolean => {
 
 // Exclude keys from user
 export const excludeFromUser = <User, Key extends keyof User>(user: User, ...keys: Key[]) => {
+  if (!user) return user;
   for (const key of keys) {
     delete user[key];
   }

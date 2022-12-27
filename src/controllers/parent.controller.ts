@@ -7,10 +7,10 @@ import StudentService from "@/services/student.service";
 import { NextFunction, Response } from "express";
 
 class ParentController {
-  private parentsService = new ParentService();
-  private studentService = new StudentService();
-  private courseService = new CourseService();
-  private attendanceService = new AttendanceService();
+  private parentsService = ParentService.getInstance();
+  private studentService = StudentService.getInstance();
+  private courseService = CourseService.getInstance();
+  private attendanceService = AttendanceService.getInstance();
 
   public getChildren = async (req: RequestWithSessionData, res: Response, next: NextFunction): Promise<void> => {
     try {

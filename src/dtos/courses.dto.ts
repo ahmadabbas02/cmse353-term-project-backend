@@ -1,15 +1,18 @@
-import { IsBoolean, IsDateString, IsString } from "class-validator";
+import { IsBoolean, IsDateString, IsNotEmpty, IsString } from "class-validator";
 
 export class CreateCourseDto {
   @IsString()
+  @IsNotEmpty()
   public name: string;
 
   @IsString()
+  @IsNotEmpty()
   public teacherId: string;
 }
 
 export class AddAttendanceRecordDto {
   @IsString()
+  @IsNotEmpty()
   public courseId: string;
 
   @IsDateString()
@@ -18,6 +21,7 @@ export class AddAttendanceRecordDto {
 
 export class UpdateAttendanceRecordDto {
   @IsString()
+  @IsNotEmpty()
   public attendanceRecordId: string;
 
   @IsBoolean()
@@ -26,8 +30,10 @@ export class UpdateAttendanceRecordDto {
 
 export class AddStudentToCourseDto {
   @IsString()
+  @IsNotEmpty()
   public studentId: string;
 
   @IsString()
+  @IsNotEmpty()
   public courseId: string;
 }

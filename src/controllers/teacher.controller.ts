@@ -8,10 +8,10 @@ import TeacherService from "@/services/teacher.service";
 import { NextFunction, Response } from "express";
 
 class TeacherController {
-  private courseService = new CourseService();
-  private teacherService = new TeacherService();
-  private attendanceService = new AttendanceService();
-  private studentService = new StudentService();
+  private courseService = CourseService.getInstance();
+  private teacherService = TeacherService.getInstance();
+  private attendanceService = AttendanceService.getInstance();
+  private studentService = StudentService.getInstance();
 
   public getCourses = async (req: RequestWithSessionData, res: Response, next: NextFunction) => {
     try {

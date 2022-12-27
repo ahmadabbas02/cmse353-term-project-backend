@@ -6,8 +6,16 @@ import CourseService from "./course.service";
 import { AttendanceRecord } from "@prisma/client";
 
 class AttendanceService {
-  private studentService = new StudentService();
-  private courseService = new CourseService();
+  static instance: AttendanceService;
+  public static getInstance(): AttendanceService {
+    if (!AttendanceService.instance) {
+      AttendanceService.instance = new AttendanceService();
+    }
+    return AttendanceService.instance;
+  }
+
+  private studentService = StudentService.getInstance();
+  private courseService = CourseService.getInstance();
   private attendanceRecords = prisma.attendanceRecord;
 
   private groupAttendanceRecords(records: AttendanceRecord[]) {

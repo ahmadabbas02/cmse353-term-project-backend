@@ -1,6 +1,14 @@
 import { prisma } from "@utils/db";
 
 class ChairService {
+  static instance: ChairService;
+  public static getInstance(): ChairService {
+    if (!ChairService.instance) {
+      ChairService.instance = new ChairService();
+    }
+    return ChairService.instance;
+  }
+
   private chairs = prisma.chair;
 
   public async getAllChairs() {

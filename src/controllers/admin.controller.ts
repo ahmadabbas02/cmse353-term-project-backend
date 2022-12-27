@@ -1,6 +1,7 @@
 import { changeSecretKey } from "@/config";
 import { AddStudentToCourseDto, CreateCourseDto } from "@/dtos/courses.dto";
-import { CreateUserDto } from "@/dtos/users.dto";
+import { ChangeRoleDto, CreateUserDto } from "@/dtos/users.dto";
+import AuthService from "@/services/auth.service";
 import ChairService from "@/services/chair.service";
 import CourseService from "@/services/course.service";
 import ParentService from "@/services/parent.service";
@@ -11,12 +12,13 @@ import { CourseGroup, User } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 
 class AdminController {
-  private coursesService = new CourseService();
-  private userService = new UserService();
-  private studentService = new StudentService();
-  private teacherService = new TeacherService();
-  private parentService = new ParentService();
-  private chairService = new ChairService();
+  private coursesService = CourseService.getInstance();
+  private userService = UserService.getInstance();
+  private studentService = StudentService.getInstance();
+  private teacherService = TeacherService.getInstance();
+  private parentService = ParentService.getInstance();
+  private chairService = ChairService.getInstance();
+  private authService = AuthService.getInstance();
 
   public getUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -150,6 +152,18 @@ class AdminController {
       const users: User[] = await changeSecretKey();
 
       res.status(201).json({ data: users, message: "Reset keys successfully!" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public updateRole = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const body: ChangeRoleDto = req.body;
+
+      const users = await this.authService.updateRole(body);
+
+      res.status(201).json({ data: users, message: "Updated role successfully!" });
     } catch (error) {
       next(error);
     }

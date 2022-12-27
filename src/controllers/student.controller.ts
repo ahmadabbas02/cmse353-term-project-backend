@@ -7,9 +7,9 @@ import CourseService from "@/services/course.service";
 import AttendanceService from "@/services/attendance.service";
 
 class StudentController {
-  private studentService = new StudentService();
-  private courseService = new CourseService();
-  private attendanceService = new AttendanceService();
+  private studentService = StudentService.getInstance();
+  private courseService = CourseService.getInstance();
+  private attendanceService = AttendanceService.getInstance();
 
   public getCourses = async (req: RequestWithSessionData, res: Response, next: NextFunction) => {
     try {

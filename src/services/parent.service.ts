@@ -2,6 +2,14 @@ import { HttpException } from "@/exceptions/HttpException";
 import { prisma } from "@/utils/db";
 
 class ParentService {
+  static instance: ParentService;
+  public static getInstance(): ParentService {
+    if (!ParentService.instance) {
+      ParentService.instance = new ParentService();
+    }
+    return ParentService.instance;
+  }
+
   private parents = prisma.parent;
 
   public async getAllParents() {

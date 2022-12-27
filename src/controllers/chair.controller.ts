@@ -7,10 +7,10 @@ import StudentService from "@/services/student.service";
 import { NextFunction, Response } from "express";
 
 class ChairController {
-  private chairService = new ChairService();
-  private courseService = new CourseService();
-  private studentService = new StudentService();
-  private attendanceService = new AttendanceService();
+  private chairService = ChairService.getInstance();
+  private courseService = CourseService.getInstance();
+  private studentService = StudentService.getInstance();
+  private attendanceService = AttendanceService.getInstance();
 
   public getDepartmentStudents = async (req: RequestWithSessionData, res: Response, next: NextFunction): Promise<void> => {
     try {

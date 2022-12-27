@@ -7,9 +7,17 @@ import { CourseGroup } from "@prisma/client";
 import StudentService from "./student.service";
 
 class CourseService {
+  static instance: CourseService;
+  public static getInstance(): CourseService {
+    if (!CourseService.instance) {
+      CourseService.instance = new CourseService();
+    }
+    return CourseService.instance;
+  }
+
   private courses = prisma.courseGroup;
-  private teacherService = new TeacherService();
-  private studentService = new StudentService();
+  private teacherService = TeacherService.getInstance();
+  private studentService = StudentService.getInstance();
 
   public async getAllCourses(includeTeacherDetails = true) {
     const courses = this.courses.findMany({

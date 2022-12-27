@@ -7,11 +7,12 @@ import { excludeFromUser } from "@/utils/util";
 import { HttpException } from "@/exceptions/HttpException";
 
 class AuthController {
-  public authService = new AuthService();
+  private authService = AuthService.getInstance();
 
   public registerStudent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userData: CreateUserDto = req.body;
+
       const signUpUserData: Student = await this.authService.registerStudent(userData);
 
       res.status(201).json({ data: signUpUserData, message: "studentSignup" });

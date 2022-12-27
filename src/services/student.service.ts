@@ -2,10 +2,17 @@ import { HttpException } from "@/exceptions/HttpException";
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
 import { Department } from "@/utils/consts";
 import { prisma } from "@/utils/db";
-import { excludeFromUsers } from "@/utils/util";
 import { Student } from "@prisma/client";
 
 class StudentService {
+  static instance: StudentService;
+  public static getInstance(): StudentService {
+    if (!StudentService.instance) {
+      StudentService.instance = new StudentService();
+    }
+    return StudentService.instance;
+  }
+
   private courses = prisma.courseGroup;
   private students = prisma.student;
   private attendanceRecords = prisma.attendanceRecord;

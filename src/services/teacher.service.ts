@@ -2,6 +2,14 @@ import { HttpException } from "@/exceptions/HttpException";
 import { prisma } from "@/utils/db";
 
 class TeacherService {
+  static instance: TeacherService;
+  public static getInstance(): TeacherService {
+    if (!TeacherService.instance) {
+      TeacherService.instance = new TeacherService();
+    }
+    return TeacherService.instance;
+  }
+
   private courses = prisma.courseGroup;
   private students = prisma.student;
   private teachers = prisma.teacher;
@@ -73,6 +81,11 @@ class TeacherService {
     });
 
     return records;
+  }
+
+  public async deleteTeacherById(teacherId: string) {
+    const deletedTeacher = await this.teachers.delete({ where: { id: teacherId } });
+    return deletedTeacher;
   }
 }
 

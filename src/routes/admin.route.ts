@@ -6,7 +6,7 @@ import AdminController from "@/controllers/admin.controller";
 import { isLoggedIn, isSpecificRole } from "@/middlewares/auth.middleware";
 import { UserRole } from "@/utils/consts";
 import { AddStudentToCourseDto, CreateCourseDto } from "@/dtos/courses.dto";
-import { CreateUserDto } from "@/dtos/users.dto";
+import { ChangeRoleDto, CreateUserDto } from "@/dtos/users.dto";
 
 class AdminRoutes implements Routes {
   public path = "/admin";
@@ -36,6 +36,15 @@ class AdminRoutes implements Routes {
 
     // Delete user
     this.router.delete(`${this.path}/users/:id`, isLoggedIn, isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR), this.adminController.deleteUser);
+
+    // Update role
+    this.router.post(
+      `${this.path}/users/updateRole`,
+      isLoggedIn,
+      isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR),
+      validationMiddleware(ChangeRoleDto, "body"),
+      this.adminController.updateRole,
+    );
 
     // TODO: Add specific id routes(if needed)
     this.router.get(`${this.path}/students`, isLoggedIn, isSpecificRole(UserRole.SYSTEM_ADMINISTRATOR), this.adminController.getStudents);
