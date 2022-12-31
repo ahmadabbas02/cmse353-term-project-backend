@@ -1,6 +1,7 @@
 import { changeSecretKey } from "@/config";
 import { AddStudentToCourseDto, CreateCourseDto } from "@/dtos/courses.dto";
 import { ChangeRoleDto, CreateUserDto } from "@/dtos/users.dto";
+import { RequestWithSessionData } from "@/interfaces/auth.interface";
 import AuthService from "@/services/auth.service";
 import ChairService from "@/services/chair.service";
 import CourseService from "@/services/course.service";
@@ -157,11 +158,11 @@ class AdminController {
     }
   };
 
-  public updateRole = async (req: Request, res: Response, next: NextFunction) => {
+  public updateRole = async (req: RequestWithSessionData, res: Response, next: NextFunction) => {
     try {
       const body: ChangeRoleDto = req.body;
 
-      const users = await this.authService.updateRole(body);
+      const users = await this.authService.updateRole(body, req.session.user.id);
 
       res.status(201).json({ data: users, message: "Updated role successfully!" });
     } catch (error) {
