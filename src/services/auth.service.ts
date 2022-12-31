@@ -176,7 +176,7 @@ class AuthService {
     return findUser;
   }
 
-  public async updateRole(data: ChangeRoleDto) {
+  public async updateRole(data: ChangeRoleDto, loggedInUserId: string) {
     const { userId, userRole, studentIds, department } = data;
 
     const findUser = await this.users.findUnique({
@@ -186,6 +186,8 @@ class AuthService {
     if (!findUser) throw new HttpException(409, "User doesn't exist");
 
     if (findUser.role === userRole) throw new HttpException(409, `User is already having the ${findUser.role} role`);
+
+    if (loggedInUserId === findUser.id) throw new HttpException(409, `You can't change your own role.`);
 
     await this.users.delete({
       where: { id: findUser.id },
