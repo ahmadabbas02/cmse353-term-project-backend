@@ -3,7 +3,7 @@ import { prisma } from "@utils/db";
 import StudentService from "./student.service";
 import { HttpException } from "@/exceptions/HttpException";
 import CourseService from "./course.service";
-import { AttendanceRecord } from "@prisma/client";
+import { AttendanceRecord, Student } from "@prisma/client";
 
 class AttendanceService {
   static instance: AttendanceService;
@@ -18,25 +18,35 @@ class AttendanceService {
   private courseService = CourseService.getInstance();
   private attendanceRecords = prisma.attendanceRecord;
 
-  private groupAttendanceRecords(records: AttendanceRecord[]) {
+  private groupAttendanceRecords(
+    records: (AttendanceRecord & {
+      student: Student;
+    })[],
+  ) {
     const groupedRecords: {
       dateTime: Date;
-      attendanceData: { id: string; studentId: string; courseGroupId: string; isPresent: boolean }[];
+      attendanceData: {
+        student: Student;
+        studentId: string;
+        courseGroupId: string;
+        id: string;
+        isPresent: boolean;
+      }[];
     }[] = [];
     records.forEach(record => {
       let foundDateTime = false;
-      const { courseGroupId, dateTime, id, isPresent, studentId } = record;
+      const { courseGroupId, dateTime, id, isPresent, student, studentId } = record;
 
       if (groupedRecords.length === 0) {
         groupedRecords.push({
           dateTime,
-          attendanceData: [{ courseGroupId, id, isPresent, studentId }],
+          attendanceData: [{ courseGroupId, id, isPresent, student, studentId }],
         });
       } else {
         for (let index = 0; index < groupedRecords.length; index++) {
           const element = groupedRecords[index];
           if (element.dateTime.toString() === dateTime.toString()) {
-            element.attendanceData.push({ id, studentId, courseGroupId, isPresent });
+            element.attendanceData.push({ courseGroupId, id, isPresent, student, studentId });
             foundDateTime = true;
             break;
           }
@@ -44,7 +54,7 @@ class AttendanceService {
         if (!foundDateTime) {
           groupedRecords.push({
             dateTime,
-            attendanceData: [{ courseGroupId, id, isPresent, studentId }],
+            attendanceData: [{ courseGroupId, id, isPresent, student, studentId }],
           });
           foundDateTime = true;
         }
@@ -67,6 +77,9 @@ class AttendanceService {
       where: {
         courseGroupId: courseId,
       },
+      include: {
+        student: true,
+      },
       orderBy: {
         dateTime: "desc",
       },
@@ -82,6 +95,9 @@ class AttendanceService {
       where: {
         courseGroupId: courseId,
         studentId,
+      },
+      include: {
+        student: true,
       },
       orderBy: {
         dateTime: "desc",
