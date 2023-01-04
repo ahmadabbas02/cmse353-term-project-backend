@@ -1,9 +1,9 @@
 import { AddAttendanceRecordDto, UpdateAttendanceRecordDto } from "@/dtos/courses.dto";
-import { prisma } from "@utils/db";
-import StudentService from "./student.service";
 import { HttpException } from "@/exceptions/HttpException";
-import CourseService from "./course.service";
 import { AttendanceRecord, Student } from "@prisma/client";
+import { prisma } from "@utils/db";
+import CourseService from "./course.service";
+import StudentService from "./student.service";
 
 class AttendanceService {
   static instance: AttendanceService;

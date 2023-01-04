@@ -2,13 +2,7 @@ import { changeSecretKey } from "@/config";
 import { AddStudentToCourseDto, CreateCourseDto } from "@/dtos/courses.dto";
 import { ChangeRoleDto, CreateUserDto } from "@/dtos/users.dto";
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
-import AuthService from "@/services/auth.service";
-import ChairService from "@/services/chair.service";
-import CourseService from "@/services/course.service";
-import ParentService from "@/services/parent.service";
-import StudentService from "@/services/student.service";
-import TeacherService from "@/services/teacher.service";
-import UserService from "@/services/user.service";
+import { CourseService, UserService, StudentService, TeacherService, ParentService, ChairService, AuthService } from "@/services";
 import { CourseGroup, User } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 

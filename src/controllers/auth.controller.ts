@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Chair, Student, Teacher, User } from "@prisma/client";
 import { ChairUserDto, CreateUserDto, LoginUserDto, ParentUserDto } from "@dtos/users.dto";
-import AuthService from "@services/auth.service";
+import { AuthService } from "@/services";
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
 import { excludeFromUser } from "@/utils/util";
 import { HttpException } from "@/exceptions/HttpException";

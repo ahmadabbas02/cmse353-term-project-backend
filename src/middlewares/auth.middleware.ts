@@ -1,8 +1,8 @@
-import { NextFunction, Response } from "express";
-import { HttpException } from "@exceptions/HttpException";
 import { RequestWithSessionData } from "@/interfaces/auth.interface";
-import { excludeFromUser } from "@/utils/util";
 import { prisma } from "@/utils/db";
+import { excludeFromUser } from "@/utils/util";
+import { HttpException } from "@exceptions/HttpException";
+import { NextFunction, Response } from "express";
 
 export const isLoggedIn = async (req: RequestWithSessionData, res: Response, next: NextFunction) => {
   try {

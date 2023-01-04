@@ -1,19 +1,19 @@
+import sanitizedConfig from "@config";
+import { Routes } from "@interfaces/routes.interface";
+import errorMiddleware from "@middlewares/error.middleware";
+import { PrismaSessionStore } from "@quixo3/prisma-session-store";
+import { prisma } from "@utils/db";
+import { logger, stream } from "@utils/logger";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
+import expressSession from "express-session";
 import helmet from "helmet";
 import hpp from "hpp";
 import morgan from "morgan";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import expressSession from "express-session";
-import sanitizedConfig from "@config";
-import { Routes } from "@interfaces/routes.interface";
-import errorMiddleware from "@middlewares/error.middleware";
-import { logger, stream } from "@utils/logger";
-import { PrismaSessionStore } from "@quixo3/prisma-session-store";
-import { prisma } from "@utils/db";
 
 class App {
   public app: express.Application;

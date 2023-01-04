@@ -1,10 +1,10 @@
-import { prisma } from "@/utils/db";
-import { isEmpty } from "@/utils/util";
-import TeacherService from "./teacher.service";
 import { AddStudentToCourseDto, CreateCourseDto } from "@/dtos/courses.dto";
 import { HttpException } from "@/exceptions/HttpException";
+import { prisma } from "@/utils/db";
+import { isEmpty } from "@/utils/util";
 import { CourseGroup } from "@prisma/client";
 import StudentService from "./student.service";
+import TeacherService from "./teacher.service";
 
 class CourseService {
   static instance: CourseService;

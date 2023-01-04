@@ -1,11 +1,11 @@
 import { Router } from "express";
 
-import { Routes } from "@interfaces/routes.interface";
-import validationMiddleware from "@middlewares/validation.middleware";
+import TeacherController from "@/controllers/teacher.controller";
+import { AddAttendanceRecordDto, UpdateAttendanceRecordDto } from "@/dtos/courses.dto";
 import { isLoggedIn, isSpecificRole } from "@/middlewares/auth.middleware";
 import { UserRole } from "@/utils/consts";
-import { AddAttendanceRecordDto, UpdateAttendanceRecordDto } from "@/dtos/courses.dto";
-import TeacherController from "@/controllers/teacher.controller";
+import { Routes } from "@interfaces/routes.interface";
+import validationMiddleware from "@middlewares/validation.middleware";
 
 class TeachersRoutes implements Routes {
   public path = "/teachers";

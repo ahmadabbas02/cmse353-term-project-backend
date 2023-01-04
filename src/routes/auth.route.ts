@@ -1,10 +1,10 @@
-import { Router } from "express";
+import { isLoggedIn, isSpecificRole } from "@/middlewares/auth.middleware";
+import { UserRole } from "@/utils/consts";
 import AuthController from "@controllers/auth.controller";
 import { ChairUserDto, CreateUserDto, LoginUserDto, ParentUserDto } from "@dtos/users.dto";
 import { Routes } from "@interfaces/routes.interface";
 import validationMiddleware from "@middlewares/validation.middleware";
-import { isLoggedIn, isSpecificRole } from "@/middlewares/auth.middleware";
-import { UserRole } from "@/utils/consts";
+import { Router } from "express";
 
 class AuthRoute implements Routes {
   public path = "/auth";

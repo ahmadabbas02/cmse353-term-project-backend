@@ -1,10 +1,10 @@
 import { NextFunction, Response } from "express";
 
-import { RequestWithSessionData } from "@/interfaces/auth.interface";
 import { HttpException } from "@/exceptions/HttpException";
-import StudentService from "@/services/student.service";
-import CourseService from "@/services/course.service";
+import { RequestWithSessionData } from "@/interfaces/auth.interface";
 import AttendanceService from "@/services/attendance.service";
+import CourseService from "@/services/course.service";
+import StudentService from "@/services/student.service";
 
 class StudentController {
   private studentService = StudentService.getInstance();

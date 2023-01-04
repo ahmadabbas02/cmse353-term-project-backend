@@ -1,12 +1,12 @@
 import { Router } from "express";
 
-import { Routes } from "@interfaces/routes.interface";
-import validationMiddleware from "@middlewares/validation.middleware";
 import AdminController from "@/controllers/admin.controller";
-import { isLoggedIn, isSpecificRole } from "@/middlewares/auth.middleware";
-import { UserRole } from "@/utils/consts";
 import { AddStudentToCourseDto, CreateCourseDto } from "@/dtos/courses.dto";
 import { ChangeRoleDto, CreateUserDto } from "@/dtos/users.dto";
+import { isLoggedIn, isSpecificRole } from "@/middlewares/auth.middleware";
+import { UserRole } from "@/utils/consts";
+import { Routes } from "@interfaces/routes.interface";
+import validationMiddleware from "@middlewares/validation.middleware";
 
 class AdminRoutes implements Routes {
   public path = "/admin";

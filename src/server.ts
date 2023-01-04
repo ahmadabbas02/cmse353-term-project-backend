@@ -1,12 +1,6 @@
 import App from "@/app";
-import AuthRoute from "@routes/auth.route";
-import IndexRoute from "@routes/index.route";
+import { AdminRoutes, AuthRoute, ChairRoutes, IndexRoute, ParentsRoutes, StudentsRoute, TeachersRoutes } from "@/routes";
 import validateEnv from "@utils/validateEnv";
-import ChairRoutes from "./routes/chair.route";
-import AdminRoutes from "./routes/admin.route";
-import StudentsRoute from "./routes/students.route";
-import TeachersRoutes from "./routes/teachers.route";
-import ParentsRoutes from "./routes/parents.route";
 
 validateEnv();
 

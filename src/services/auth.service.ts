@@ -1,9 +1,9 @@
-import { Chair, Parent, Prisma, Student, Teacher, User } from "@prisma/client";
 import { ChairUserDto, ChangeRoleDto, CreateUserDto, LoginUserDto, ParentUserDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/HttpException";
-import { isEmpty } from "@utils/util";
+import { Chair, Parent, Prisma, Student, Teacher, User } from "@prisma/client";
 import { UserRole } from "@utils/consts";
 import { prisma } from "@utils/db";
+import { isEmpty } from "@utils/util";
 import UserService from "./user.service";
 
 class AuthService {
